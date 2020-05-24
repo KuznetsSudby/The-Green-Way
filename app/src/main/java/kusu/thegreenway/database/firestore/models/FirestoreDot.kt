@@ -1,12 +1,13 @@
 package kusu.thegreenway.database.firestore.models
 
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.GeoPoint
 import com.google.type.LatLng
 import java.io.Serializable
 
-data class FirestoreDot(
-    val title: String,
-    val description: String,
-    val type: String,
-    val position: GeoPoint
-): Serializable
+class FirestoreDot: Serializable {
+    val title: String = ""
+    val description: String = ""
+    val type: DocumentReference? = null
+    val position: GeoPoint = GeoPoint(0.0, 0.0)
+}

@@ -5,7 +5,9 @@ import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.type.LatLng
+import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
+import kusu.thegreenway.database.DataBaseManager.isLoaded
 import kusu.thegreenway.database.firestore.models.FirestoreCategory
 import kusu.thegreenway.database.firestore.models.FirestoreDot
 import kusu.thegreenway.database.firestore.models.FirestoreDotType
@@ -14,91 +16,86 @@ import kusu.thegreenway.database.models.*
 import kusu.thegreenway.utils.Result
 
 class FirestoreDB : DB {
+
     val db = Firebase.firestore
 
-    override suspend fun getRoutes(): Result<HashMap<String, Route>> {
-        try {
-            val result = db.collection(ROUTES)
-                .get()
-                .await()
-                .documents
+    val job = SupervisorJob()
+    val scope = CoroutineScope(Dispatchers.IO + job)
 
-            val map = HashMap<String, Route>()
-            result.forEach { document ->
-                val converted = document.toObject(FirestoreRoute::class.java)!!
-                map[document.id] = Route(
-                    title = converted.title,
-                    description = converted.description,
-                    lines = converted.lines.map { it.toLatLng() },
-                    dots = converted.dots.map { Reference(it.id) },
-                    categories = converted.categories.map { Reference(it.id) }
+    override suspend fun getRoutes(): Result<List<Route>> {
+        try {
+            val jobs = ArrayList<Deferred<Any>>()
+
+            val jobRoutes = scope.async(Dispatchers.IO) {
+                db.collection(ROUTES)
+                    .get()
+                    .await()
+                    .documents
+            }.apply { jobs.add(this) }
+            val jobCategories = scope.async(Dispatchers.IO) {
+                db.collection(CATEGORIES)
+                    .get()
+                    .await()
+                    .documents
+            }.apply { jobs.add(this) }
+            val jobDots = scope.async(Dispatchers.IO) {
+                db.collection(DOTS)
+                    .get()
+                    .await()
+                    .documents
+            }.apply { jobs.add(this) }
+            val jobDotTypes = scope.async(Dispatchers.IO) {
+                db.collection(DOT_TYPES)
+                    .get()
+                    .await()
+                    .documents
+            }.apply { jobs.add(this) }
+
+            jobs.awaitAll().find { it is Result.Error }?.let {
+                return it as Result.Error
+            }
+
+            val types = HashMap<String, DotType>()
+            jobDotTypes.getCompleted().forEach { document ->
+                val converted = document.toObject(FirestoreDotType::class.java)!!
+                types[document.id] = DotType(
+                    id = document.id,
+                    description = converted.description
                 )
             }
-            return Result.Success(map)
-        } catch (e: Exception) {
-            return Result.Error(e)
-        }
-    }
 
-    override suspend fun getCategories(): Result<HashMap<String, Category>> {
-        try {
-            val result = db.collection(CATEGORIES)
-                .get()
-                .await()
-                .documents
-
-            val map = HashMap<String, Category>()
-            result.forEach { document ->
+            val categories = HashMap<String, Category>()
+            jobDotTypes.getCompleted().forEach { document ->
                 val converted = document.toObject(FirestoreCategory::class.java)!!
-                map[document.id] = Category(
+                categories[document.id] = Category(
+                    document.id,
                     title = converted.title,
                     description = converted.description
                 )
             }
-            return Result.Success(map)
-        } catch (e: Exception) {
-            return Result.Error(e)
-        }
-    }
 
-    override suspend fun getDots(): Result<HashMap<String, Dot>> {
-        try {
-            val result = db.collection(DOTS)
-                .get()
-                .await()
-                .documents
-
-            val map = HashMap<String, Dot>()
-            result.forEach { document ->
+            val dots = HashMap<String, Dot>()
+            jobDots.getCompleted().forEach { document ->
                 val converted = document.toObject(FirestoreDot::class.java)!!
-                map[document.id] = Dot(
+                dots[document.id] = Dot(
                     title = converted.title,
                     description = converted.description,
                     position = converted.position.toLatLng(),
-                    type = Reference(converted.type)
+                    type = types[converted.type?.id]
                 )
             }
-            return Result.Success(map)
-        } catch (e: Exception) {
-            return Result.Error(e)
-        }
-    }
 
-    override suspend fun getDotTypes(): Result<HashMap<String, DotType>> {
-        try {
-            val result = db.collection(DOT_TYPES)
-                .get()
-                .await()
-                .documents
-
-            val map = HashMap<String, DotType>()
-            result.forEach { document ->
-                val converted = document.toObject(FirestoreDotType::class.java)!!
-                map[document.id] = DotType(
-                    description = converted.description
+            return Result.Success(jobRoutes.getCompleted().map { document ->
+                val converted = document.toObject(FirestoreRoute::class.java)!!
+                Route(
+                    id = document.id,
+                    title = converted.title,
+                    description = converted.description,
+                    lines = converted.lines.map { it.toLatLng() },
+                    dots = converted.dots.map { dots[it.id] }.filterNotNull(),
+                    categories = converted.categories.map { categories[it.id] }.filterNotNull()
                 )
-            }
-            return Result.Success(map)
+            })
         } catch (e: Exception) {
             return Result.Error(e)
         }

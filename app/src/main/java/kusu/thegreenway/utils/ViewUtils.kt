@@ -1,8 +1,10 @@
 package kusu.thegreenway.utils
 
+import android.content.Context
 import android.text.Editable
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -28,3 +30,13 @@ fun EditText.asFlow() = callbackFlow {
         removeTextChangedListener(textChangedListener)
     }
 }
+
+fun String.toast(context: Context){
+    toast(context, this)
+}
+
+fun toast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Exception.messageOr(def: String): String = localizedMessage ?: message ?: def

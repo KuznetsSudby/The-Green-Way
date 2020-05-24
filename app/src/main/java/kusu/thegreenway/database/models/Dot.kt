@@ -6,6 +6,6 @@ import java.io.Serializable
 data class Dot(
     val title: String,
     val description: String,
-    val type: Reference,
+    val type: DotType?,
     val position: LatLng
 ): Serializable

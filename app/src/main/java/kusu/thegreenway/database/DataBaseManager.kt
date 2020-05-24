@@ -9,6 +9,7 @@ import kusu.thegreenway.database.models.Category
 import kusu.thegreenway.database.models.Dot
 import kusu.thegreenway.database.models.DotType
 import kusu.thegreenway.database.models.Route
+import kusu.thegreenway.utils.Event
 import kotlin.collections.HashMap
 import kusu.thegreenway.utils.Result
 
@@ -18,50 +19,37 @@ object DataBaseManager {
     val scope = CoroutineScope(Dispatchers.IO + job)
 
     val db: DB = FirestoreDB()
+    var isLoaded: Boolean = false
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
-    private val _exception = MutableLiveData<Exception>()
-    val exception: LiveData<Exception> = _exception
+    private val _exception = MutableLiveData<Event<Exception>>()
+    val exception: LiveData<Event<Exception>> = _exception
 
-    var isLoaded: Boolean = false
-
-    val categories = HashMap<String, Category>()
-    val dotTypes = HashMap<String, DotType>()
-    val dots = HashMap<String, Dot>()
-    val routes = HashMap<String, Route>()
+    private val _routes = MutableLiveData<List<Route>>()
+    val routes: LiveData<List<Route>> = _routes
 
     fun loadData() {
+        if (isLoaded || isLoading.value == true)
+            return
         scope.launch {
             _isLoading.postValue(true)
             isLoaded = false
 
-            val jobs = ArrayList<Deferred<Any>>()
-
-            val jobRoutes = async(Dispatchers.IO) { db.getRoutes() }.apply { jobs.add(this) }
-            val jobCategories = async(Dispatchers.IO) { db.getCategories() }.apply { jobs.add(this) }
-            val jobDots = async(Dispatchers.IO) { db.getDots() }.apply { jobs.add(this) }
-            val jobDotTypes = async(Dispatchers.IO) { db.getDotTypes() }.apply { jobs.add(this) }
-
-            jobs.awaitAll().find { it is Result.Error }?.let {
-                isLoaded = false
-                _exception.postValue((it as Result.Error).exception)
-            } ?: run {
-                isLoaded = true
-                routes.clearAndAdd(jobRoutes.getCompleted())
-                categories.clearAndAdd(jobCategories.getCompleted())
-                dots.clearAndAdd(jobDots.getCompleted())
-                dotTypes.clearAndAdd(jobDotTypes.getCompleted())
-            }
-
+            val result = db.getRoutes()
+            result.proceedResult(
+                success = {
+                    isLoaded = true
+                    _routes.postValue(it)
+                },
+                error = {
+                    isLoaded = false
+                    _exception.postValue(Event(it))
+                }
+            )
             _isLoading.postValue(false)
         }
     }
 }
 
-private fun <K, V> HashMap<K, V>.clearAndAdd(completed: Result<HashMap<K, V>>) {
-    clear()
-    if (completed is Result.Success)
-        putAll(completed.data)
-}

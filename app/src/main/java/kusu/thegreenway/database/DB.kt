@@ -1,4 +1,4 @@
-package kusu.thegreenway.database.firestore
+package kusu.thegreenway.database
 
 import kusu.thegreenway.database.models.Category
 import kusu.thegreenway.database.models.Dot

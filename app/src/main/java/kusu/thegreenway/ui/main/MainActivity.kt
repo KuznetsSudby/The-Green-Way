@@ -1,11 +1,12 @@
-package kusu.thegreenway
+package kusu.thegreenway.ui.main
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.yandex.mapkit.MapKitFactory
-import kusu.thegreenway.ui.main.MainFragment
+import dagger.android.support.DaggerAppCompatActivity
+import kusu.thegreenway.R
+import kusu.thegreenway.ui.main.map.MapFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         MapKitFactory.initialize(this)
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, MainFragment())
+                    .replace(R.id.container, MapFragment())
                     .commitNow()
         }
     }

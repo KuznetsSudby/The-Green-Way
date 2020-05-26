@@ -3,22 +3,17 @@ package kusu.thegreenway.database
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import kotlinx.coroutines.*
-import kusu.thegreenway.database.firestore.DB
-import kusu.thegreenway.database.firestore.FirestoreDB
-import kusu.thegreenway.database.models.Category
-import kusu.thegreenway.database.models.Dot
-import kusu.thegreenway.database.models.DotType
 import kusu.thegreenway.database.models.Route
 import kusu.thegreenway.utils.Event
-import kotlin.collections.HashMap
-import kusu.thegreenway.utils.Result
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object DataBaseManager {
+@Singleton
+class DataBaseManager @Inject constructor(val db: DB) {
 
     val job = SupervisorJob()
     val scope = CoroutineScope(Dispatchers.IO + job)
 
-    val db: DB = FirestoreDB()
     var isLoaded: Boolean = false
 
     private val _isLoading = MutableLiveData<Boolean>()

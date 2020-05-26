@@ -1,4 +1,4 @@
-package kusu.thegreenway.ui.main
+package kusu.thegreenway.ui.main.map
 
 import android.content.res.Resources
 import com.google.type.LatLng

@@ -1,21 +1,23 @@
 package kusu.thegreenway.database.firestore
 
-import android.util.Log
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.type.LatLng
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kusu.thegreenway.database.DataBaseManager.isLoaded
+import kusu.thegreenway.database.DB
 import kusu.thegreenway.database.firestore.models.FirestoreCategory
 import kusu.thegreenway.database.firestore.models.FirestoreDot
 import kusu.thegreenway.database.firestore.models.FirestoreDotType
 import kusu.thegreenway.database.firestore.models.FirestoreRoute
 import kusu.thegreenway.database.models.*
 import kusu.thegreenway.utils.Result
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FirestoreDB : DB {
+@Singleton
+class FirestoreDB @Inject constructor() : DB {
 
     val db = Firebase.firestore
 
@@ -103,7 +105,6 @@ class FirestoreDB : DB {
 
 
     companion object {
-        const val TAG = "ExcM FirestoreDB"
         const val ROUTES = "routes"
         const val CATEGORIES = "categories"
         const val DOT_TYPES = "dot_types"

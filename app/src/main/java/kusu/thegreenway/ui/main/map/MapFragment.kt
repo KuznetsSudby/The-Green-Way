@@ -1,21 +1,20 @@
-package kusu.thegreenway.ui.main
+package kusu.thegreenway.ui.main.map
 
 import android.content.Context
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.google.type.LatLng
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
 import com.yandex.mapkit.map.*
 import com.yandex.runtime.image.ImageProvider
+import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.main_fragment.*
 import kusu.thegreenway.R
 import kusu.thegreenway.database.models.Dot
@@ -25,10 +24,14 @@ import kusu.thegreenway.utils.EventObserver
 import kusu.thegreenway.utils.messageOr
 import kusu.thegreenway.utils.observeVisibility
 import kusu.thegreenway.utils.toast
+import javax.inject.Inject
 
-class MainFragment : Fragment(), MapObjectTapListener {
+class MapFragment : DaggerFragment(), MapObjectTapListener {
 
-    private lateinit var viewModel: MainViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    private val viewModel by viewModels<MapViewModel> { viewModelFactory }
 
     val mapPoints: MutableList<MapObject> = ArrayList()
     var selectedRoute: PolylineMapObject? = null
@@ -38,15 +41,6 @@ class MainFragment : Fragment(), MapObjectTapListener {
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        viewModel = ViewModelProvider(this, object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                return MainViewModel() as T
-            }
-        })[MainViewModel::class.java]
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,7 +88,7 @@ class MainFragment : Fragment(), MapObjectTapListener {
                 Polyline(route.lines.map { it.toPoint() })
             ).also { polyline ->
                 polyline.userData = route
-                polyline.addTapListener(this@MainFragment)
+                polyline.addTapListener(this@MapFragment)
                 polyline.unselect(resources)
                 if (route.id == previousSelectedId) {
                     isFound = true
@@ -123,7 +117,7 @@ class MainFragment : Fragment(), MapObjectTapListener {
                 ImageProvider.fromResource(requireContext(), dot.type.convertToIcon())
             ).also { dotObject ->
                 dotObject.userData = dot
-                dotObject.addTapListener(this@MainFragment)
+                dotObject.addTapListener(this@MapFragment)
                 mapPoints.add(dotObject)
             }
         }

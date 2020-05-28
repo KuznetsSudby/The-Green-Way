@@ -11,6 +11,8 @@ fun DotType?.convertToIcon(): Int {
     return when(this?.id){
         DotType.ROUTE_START -> R.drawable.ic_pin_a
         DotType.ROUTE_FINISH -> R.drawable.ic_pin_b
+        DotType.MEMORIAL -> R.drawable.ic_pin_memorial
+        DotType.MUSEUM -> R.drawable.ic_pin_museum
         else -> R.drawable.ic_pin_unknown
     }
 }

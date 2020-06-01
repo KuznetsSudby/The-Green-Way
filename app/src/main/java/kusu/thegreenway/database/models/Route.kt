@@ -9,5 +9,12 @@ data class Route(
     val description: String,
     val lines: List<LatLng>,
     val categories: List<Category>,
-    val dots: List<Dot>
+    val travelTypes: List<TravelType>,
+    val dots: List<Dot>,
+    val difficulty: Difficulty,
+    val images: List<String>,
+    val animals: Boolean,
+    val approved: Boolean,
+    val children: Boolean,
+    val disabilities: Boolean
 ) : Serializable

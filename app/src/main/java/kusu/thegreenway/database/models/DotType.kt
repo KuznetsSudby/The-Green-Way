@@ -4,7 +4,8 @@ import java.io.Serializable
 
 data class DotType(
     val id: String,
-    val title: String
+    val title: String,
+    val onlyRoute: Boolean
 ) : Serializable{
 
     companion object{

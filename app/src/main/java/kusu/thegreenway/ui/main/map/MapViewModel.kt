@@ -11,10 +11,11 @@ import javax.inject.Inject
 
 class MapViewModel @Inject constructor(dbManger: DataBaseManager) : ViewModel() {
 
-    val dbLoading = dbManger.isLoading
+    val dbLoading = dbManger.loading
     val dbException = dbManger.exception
 
     val routes = dbManger.routes
+    val dots = dbManger.dots
 
     private var _selectedItem: MutableLiveData<Route?> = MutableLiveData()
     var selectedItem: LiveData<Route?> = _selectedItem

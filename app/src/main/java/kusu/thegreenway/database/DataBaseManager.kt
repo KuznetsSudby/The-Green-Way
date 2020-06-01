@@ -2,7 +2,9 @@ package kusu.thegreenway.database
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import kotlinx.coroutines.*
+import kusu.thegreenway.database.models.Dot
 import kusu.thegreenway.database.models.Route
 import kusu.thegreenway.utils.Event
 import javax.inject.Inject
@@ -14,36 +16,15 @@ class DataBaseManager @Inject constructor(val db: DB) {
     val job = SupervisorJob()
     val scope = CoroutineScope(Dispatchers.IO + job)
 
-    var isLoaded: Boolean = false
+    val loading: LiveData<Boolean> = db.loading
+    val exception: LiveData<Event<Exception>> = db.exception
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
-
-    private val _exception = MutableLiveData<Event<Exception>>()
-    val exception: LiveData<Event<Exception>> = _exception
-
-    private val _routes = MutableLiveData<List<Route>>()
-    val routes: LiveData<List<Route>> = _routes
+    val routes: LiveData<List<Route>> = db.routes
+    val dots: LiveData<List<Dot>> = db.dots
 
     fun loadData() {
-        if (isLoaded || isLoading.value == true)
-            return
         scope.launch {
-            _isLoading.postValue(true)
-            isLoaded = false
-
-            val result = db.getRoutes()
-            result.proceedResult(
-                success = {
-                    isLoaded = true
-                    _routes.postValue(it)
-                },
-                error = {
-                    isLoaded = false
-                    _exception.postValue(Event(it))
-                }
-            )
-            _isLoading.postValue(false)
+            db.loadData()
         }
     }
 }

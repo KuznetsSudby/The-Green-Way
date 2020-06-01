@@ -1,12 +1,17 @@
 package kusu.thegreenway.database
 
-import kusu.thegreenway.database.models.Category
+import androidx.lifecycle.LiveData
 import kusu.thegreenway.database.models.Dot
-import kusu.thegreenway.database.models.DotType
 import kusu.thegreenway.database.models.Route
-import kusu.thegreenway.utils.Result
+import kusu.thegreenway.utils.Event
 
 interface DB {
 
-    suspend fun getRoutes(): Result<List<Route>>
+    val routes: LiveData<List<Route>>
+    val dots: LiveData<List<Dot>>
+
+    val loading: LiveData<Boolean>
+    val exception: LiveData<Event<Exception>>
+
+    suspend fun loadData()
 }

@@ -6,6 +6,9 @@ import java.io.Serializable
 data class Dot(
     val title: String,
     val description: String,
-    val type: DotType?,
+    val type: DotType,
     val position: LatLng
-): Serializable
+) : Serializable {
+
+    val isRouteSpecific: Boolean = type.onlyRoute
+}

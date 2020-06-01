@@ -1,13 +1,12 @@
 package kusu.thegreenway.ui.main.map
 
-import android.content.Context
+import android.graphics.PointF
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
@@ -66,13 +65,17 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
             reinitializeMapRoutes(routes)
         })
 
-        viewModel.selectedItem.observe(viewLifecycleOwner, Observer {
-            it?.dots?.find { it.type?.id == DotType.ROUTE_START }?.let { dot ->
-                mapView.map.move(
-                    CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f),
-                    Animation(Animation.Type.SMOOTH, 1.5f),
-                    null
-                )
+        viewModel.selectedItem.observe(viewLifecycleOwner, Observer { route ->
+            if (route != null) {
+                route.dots.find { it.type?.id == DotType.ROUTE_START }?.let { dot ->
+                    mapView.map.move(
+                        CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f),
+                        Animation(Animation.Type.SMOOTH, 1.5f),
+                        null
+                    )
+                }
+            } else {
+
             }
         })
     }
@@ -106,15 +109,23 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
         selectedRoute = polyline
         selectedRoute?.let { route ->
             route.select(resources)
-            addDots(route.userData as Route)
+            addDots((route.userData as Route).dots)
+        } ?: run {
+            addDots(viewModel.dots.value?.filter { it.isRouteSpecific.not() } ?: emptyList())
         }
     }
 
-    private fun addDots(route: Route) {
-        route.dots.forEach { dot ->
+    private fun addDots(dots: List<Dot>) {
+        dots.forEach { dot ->
             mapView.map.mapObjects.addPlacemark(
                 dot.position.toPoint(),
-                ImageProvider.fromResource(requireContext(), dot.type.convertToIcon())
+                ImageProvider.fromResource(
+                    requireContext(),
+                    dot.type.convertToIcon()
+                ),
+                IconStyle().apply {
+                    setAnchor(PointF(0.5f, 1.0f))
+                }
             ).also { dotObject ->
                 dotObject.userData = dot
                 dotObject.addTapListener(this@MapFragment)

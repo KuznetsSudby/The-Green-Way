@@ -1,16 +1,20 @@
 package kusu.thegreenway.ui.main.map
 
-import android.graphics.PointF
 import android.os.Bundle
+import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
+import com.yandex.mapkit.logo.Alignment
+import com.yandex.mapkit.logo.HorizontalAlignment
+import com.yandex.mapkit.logo.VerticalAlignment
 import com.yandex.mapkit.map.*
 import com.yandex.runtime.image.ImageProvider
 import dagger.android.support.DaggerFragment
@@ -33,7 +37,9 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     private val viewModel by viewModels<MapViewModel> { viewModelFactory }
 
     val mapPoints: MutableList<MapObject> = ArrayList()
+
     var selectedRoute: PolylineMapObject? = null
+    var selectedDot: PlacemarkMapObject? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +50,7 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        //TODO save previous camera position
         mapView.map.move(
             CameraPosition(TARGET_LOCATION, 8.0f, 0.0f, 0.0f),
             Animation(Animation.Type.LINEAR, 0f),
@@ -54,6 +61,7 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
             Animation(Animation.Type.SMOOTH, 3f),
             null
         )
+        mapView.map.logo.setAlignment(Alignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP))
 
         progressContainer.observeVisibility(viewLifecycleOwner, viewModel.dbLoading)
 
@@ -66,17 +74,30 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
         })
 
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { route ->
-            if (route != null) {
-                route.dots.find { it.type?.id == DotType.ROUTE_START }?.let { dot ->
-                    mapView.map.move(
-                        CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f),
-                        Animation(Animation.Type.SMOOTH, 1.5f),
-                        null
-                    )
-                }
-            } else {
-
+            route?.dots?.find { it.type.id == DotType.ROUTE_START }?.let { dot ->
+                mapView.map.move(
+                    CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f),
+                    Animation(Animation.Type.SMOOTH, 1.5f),
+                    null
+                )
             }
+        })
+        viewModel.showDescription.observe(viewLifecycleOwner, Observer { show ->
+            textLabel.text = viewModel.getDescriptionText()
+
+//            val constraint = ConstraintSet()
+//            constraint.clone(main)
+//
+//            if (show) {
+//                constraint.connect(R.id.descriptionContainer, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+//                constraint.clear(R.id.descriptionContainer, ConstraintSet.TOP)
+//            }else{
+//                constraint.connect(R.id.descriptionContainer, ConstraintSet.TOP, R.id.mapView, ConstraintSet.BOTTOM)
+//                constraint.clear(R.id.descriptionContainer, ConstraintSet.BOTTOM)
+//            }
+//
+//            TransitionManager.beginDelayedTransition(main)
+//            constraint.applyTo(main)
         })
     }
 
@@ -105,6 +126,10 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     }
 
     private fun selectRoute(polyline: PolylineMapObject?) {
+        selectedRoute.unselect(resources)
+        selectDot(null)
+        //TODO need clear optimization. Remove / add only dots difference. Also add animation for this
+        clearDots()
         viewModel.selectRoute(polyline?.userData as Route?)
         selectedRoute = polyline
         selectedRoute?.let { route ->
@@ -115,6 +140,14 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
         }
     }
 
+    private fun selectDot(placemarkMapObject: PlacemarkMapObject?) {
+        selectedDot.unselect(resources)
+        selectedDot = placemarkMapObject
+        viewModel.selectDot(placemarkMapObject?.userData as Dot?)
+        selectedDot.select(resources)
+    }
+
+
     private fun addDots(dots: List<Dot>) {
         dots.forEach { dot ->
             mapView.map.mapObjects.addPlacemark(
@@ -123,9 +156,7 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
                     requireContext(),
                     dot.type.convertToIcon()
                 ),
-                IconStyle().apply {
-                    setAnchor(PointF(0.5f, 1.0f))
-                }
+                getBaseIconStyle()
             ).also { dotObject ->
                 dotObject.userData = dot
                 dotObject.addTapListener(this@MapFragment)
@@ -151,15 +182,16 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     private fun selectOnMap(mapObject: MapObject) {
         when (mapObject) {
             is PolylineMapObject -> {
-                selectedRoute.unselect(resources)
-                clearDots()
                 if (selectedRoute == mapObject)
                     selectRoute(null)
                 else
                     selectRoute(mapObject)
             }
             is PlacemarkMapObject -> {
-                toast(requireContext(), (mapObject.userData as Dot).description)
+                if (selectedDot == mapObject)
+                    selectDot(null)
+                else
+                    selectDot(mapObject)
             }
         }
     }

@@ -1,10 +1,10 @@
-package by.fideware.alcoholtruck.auth
+package kusu.thegreenway.utils
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 
-class CombineLiveData<T>(first: LiveData<T>, second: LiveData<T>, combine: (T?, T?) -> T) :
-    MediatorLiveData<T>() {
+class CombineLiveData<F, S, R>(first: LiveData<F>, second: LiveData<S>, combine: (F?, S?) -> R) :
+    MediatorLiveData<R>() {
 
     init {
         addSource(first) {

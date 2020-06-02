@@ -4,7 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import com.google.type.LatLng
 import kotlinx.coroutines.*
@@ -20,7 +22,12 @@ import javax.inject.Singleton
 @Singleton
 class FirestoreDB @Inject constructor() : DB {
 
-    private val firestore = Firebase.firestore
+    private val firestore = Firebase.firestore.apply {
+        firestoreSettings = firestoreSettings {
+            isPersistenceEnabled = true
+        }
+    }
+
     private val job = SupervisorJob()
     private val scope = CoroutineScope(Dispatchers.IO + job)
 
@@ -44,6 +51,7 @@ class FirestoreDB @Inject constructor() : DB {
     override val routes: LiveData<List<Route>> = _routes
     override val exception: LiveData<Event<Exception>> = _exception
 
+    //TODO add Source.CACHE logic
     override suspend fun loadData() {
         synchronized(state) {
             if (state.value != State.NO_DATA)

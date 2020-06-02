@@ -30,79 +30,79 @@ fun DotType?.convertToIcon(): Int {
 }
 
 fun PolylineMapObject?.unselect(resources: Resources) {
-//    val animatorSet = AnimatorSet()
-//    animatorSet.playTogether(
-//        ValueAnimator
-//            .ofArgb(resources.getColor(R.color.colorAccent), resources.getColor(R.color.colorPrimary))
-//            .setDuration(ANIMATION_DURATION)
-//            .apply {
-//                addUpdateListener { valueAnimator ->
-//                    this@unselect?.strokeColor = valueAnimator.animatedValue as Int
-//                }
-//            },
-//        ValueAnimator
-//            .ofFloat(LINE_WIDTH_SELECTED, LINE_WIDTH)
-//            .setDuration(ANIMATION_DURATION)
-//            .apply {
-//                addUpdateListener { valueAnimator ->
-//                    this@unselect?.strokeWidth = valueAnimator.animatedValue as Float
-//                }
-//            })
-//    animatorSet.start()
+    val animatorSet = AnimatorSet()
+    animatorSet.playTogether(
+        ValueAnimator
+            .ofArgb(resources.getColor(R.color.colorAccent), resources.getColor(R.color.colorPrimary))
+            .setDuration(ANIMATION_DURATION)
+            .apply {
+                addUpdateListener { valueAnimator ->
+                    this@unselect?.strokeColor = valueAnimator.animatedValue as Int
+                }
+            },
+        ValueAnimator
+            .ofFloat(LINE_WIDTH_SELECTED, LINE_WIDTH)
+            .setDuration(ANIMATION_DURATION)
+            .apply {
+                addUpdateListener { valueAnimator ->
+                    this@unselect?.strokeWidth = valueAnimator.animatedValue as Float
+                }
+            })
+    animatorSet.start()
 }
 
 fun PolylineMapObject?.select(resources: Resources) {
-//    val animatorSet = AnimatorSet()
-//    animatorSet.playTogether(
-//        ValueAnimator
-//            .ofArgb(resources.getColor(R.color.colorPrimary), resources.getColor(R.color.colorAccent))
-//            .setDuration(ANIMATION_DURATION)
-//            .apply {
-//                addUpdateListener { valueAnimator ->
-//                    this@select?.strokeColor = valueAnimator.animatedValue as Int
-//                }
-//            },
-//        ValueAnimator
-//            .ofFloat(LINE_WIDTH, LINE_WIDTH_SELECTED)
-//            .setDuration(ANIMATION_DURATION)
-//            .apply {
-//                addUpdateListener { valueAnimator ->
-//                    this@select?.strokeWidth = valueAnimator.animatedValue as Float
-//                }
-//            })
-//    animatorSet.start()
+    val animatorSet = AnimatorSet()
+    animatorSet.playTogether(
+        ValueAnimator
+            .ofArgb(resources.getColor(R.color.colorPrimary), resources.getColor(R.color.colorAccent))
+            .setDuration(ANIMATION_DURATION)
+            .apply {
+                addUpdateListener { valueAnimator ->
+                    this@select?.strokeColor = valueAnimator.animatedValue as Int
+                }
+            },
+        ValueAnimator
+            .ofFloat(LINE_WIDTH, LINE_WIDTH_SELECTED)
+            .setDuration(ANIMATION_DURATION)
+            .apply {
+                addUpdateListener { valueAnimator ->
+                    this@select?.strokeWidth = valueAnimator.animatedValue as Float
+                }
+            })
+    animatorSet.start()
 }
 
 fun PlacemarkMapObject?.unselect() {
-//    ValueAnimator
-//        .ofFloat(DOT_SCALE_SELECTED, DOT_SCALE)
-//        .setDuration(ANIMATION_DURATION)
-//        .apply {
-//            addUpdateListener { valueAnimator ->
-//                try {
-//                    this@unselect?.setIconStyle(
-//                        getBaseIconStyle().setScale(valueAnimator.animatedValue as Float)
-//                    )
-//                } catch (e: RuntimeException) {
-//                    this.cancel()
-//                }
-//            }
-//            start()
-//        }
+    ValueAnimator
+        .ofFloat(DOT_SCALE_SELECTED, DOT_SCALE)
+        .setDuration(ANIMATION_DURATION)
+        .apply {
+            addUpdateListener { valueAnimator ->
+                try {
+                    this@unselect?.setIconStyle(
+                        getBaseIconStyle().setScale(valueAnimator.animatedValue as Float)
+                    )
+                } catch (e: RuntimeException) {
+                    this.cancel()
+                }
+            }
+            start()
+        }
 }
 
 fun PlacemarkMapObject?.select() {
-//    ValueAnimator
-//        .ofFloat(DOT_SCALE, DOT_SCALE_SELECTED)
-//        .setDuration(ANIMATION_DURATION)
-//        .apply {
-//            addUpdateListener { value ->
-//                this@select?.setIconStyle(
-//                    getBaseIconStyle().setScale(value.animatedValue as Float)
-//                )
-//            }
-//            start()
-//        }
+    ValueAnimator
+        .ofFloat(DOT_SCALE, DOT_SCALE_SELECTED)
+        .setDuration(ANIMATION_DURATION)
+        .apply {
+            addUpdateListener { value ->
+                this@select?.setIconStyle(
+                    getBaseIconStyle().setScale(value.animatedValue as Float)
+                )
+            }
+            start()
+        }
 }
 
 

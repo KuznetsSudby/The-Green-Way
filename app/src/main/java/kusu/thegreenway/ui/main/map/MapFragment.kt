@@ -85,19 +85,19 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
         viewModel.showDescription.observe(viewLifecycleOwner, Observer { show ->
             textLabel.text = viewModel.getDescriptionText()
 
-//            val constraint = ConstraintSet()
-//            constraint.clone(main)
-//
-//            if (show) {
-//                constraint.connect(R.id.descriptionContainer, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-//                constraint.clear(R.id.descriptionContainer, ConstraintSet.TOP)
-//            }else{
-//                constraint.connect(R.id.descriptionContainer, ConstraintSet.TOP, R.id.mapView, ConstraintSet.BOTTOM)
-//                constraint.clear(R.id.descriptionContainer, ConstraintSet.BOTTOM)
-//            }
-//
-//            TransitionManager.beginDelayedTransition(main)
-//            constraint.applyTo(main)
+            val constraint = ConstraintSet()
+            constraint.clone(main)
+
+            if (show) {
+                constraint.connect(R.id.descriptionContainer, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+                constraint.clear(R.id.descriptionContainer, ConstraintSet.TOP)
+            }else{
+                constraint.connect(R.id.descriptionContainer, ConstraintSet.TOP, R.id.mapView, ConstraintSet.BOTTOM)
+                constraint.clear(R.id.descriptionContainer, ConstraintSet.BOTTOM)
+            }
+
+            TransitionManager.beginDelayedTransition(main)
+            constraint.applyTo(main)
         })
     }
 

@@ -4,7 +4,6 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.res.Resources
 import android.graphics.PointF
-import com.google.type.LatLng
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.PlacemarkMapObject
@@ -29,15 +28,15 @@ fun DotType?.convertToIcon(): Int {
     }
 }
 
-fun PolylineMapObject?.unselect(resources: Resources) {
+fun PolylineMapObject.unselect(resources: Resources, baseColorId: Int) {
     val animatorSet = AnimatorSet()
     animatorSet.playTogether(
         ValueAnimator
-            .ofArgb(resources.getColor(R.color.colorAccent), resources.getColor(R.color.colorPrimary))
+            .ofArgb(resources.getColor(R.color.colorAccent), resources.getColor(baseColorId))
             .setDuration(ANIMATION_DURATION)
             .apply {
                 addUpdateListener { valueAnimator ->
-                    this@unselect?.strokeColor = valueAnimator.animatedValue as Int
+                    this@unselect.strokeColor = valueAnimator.animatedValue as Int
                 }
             },
         ValueAnimator
@@ -45,21 +44,21 @@ fun PolylineMapObject?.unselect(resources: Resources) {
             .setDuration(ANIMATION_DURATION)
             .apply {
                 addUpdateListener { valueAnimator ->
-                    this@unselect?.strokeWidth = valueAnimator.animatedValue as Float
+                    this@unselect.strokeWidth = valueAnimator.animatedValue as Float
                 }
             })
     animatorSet.start()
 }
 
-fun PolylineMapObject?.select(resources: Resources) {
+fun PolylineMapObject.select(resources: Resources, baseColorId: Int) {
     val animatorSet = AnimatorSet()
     animatorSet.playTogether(
         ValueAnimator
-            .ofArgb(resources.getColor(R.color.colorPrimary), resources.getColor(R.color.colorAccent))
+            .ofArgb(resources.getColor(baseColorId), resources.getColor(R.color.colorAccent))
             .setDuration(ANIMATION_DURATION)
             .apply {
                 addUpdateListener { valueAnimator ->
-                    this@select?.strokeColor = valueAnimator.animatedValue as Int
+                    this@select.strokeColor = valueAnimator.animatedValue as Int
                 }
             },
         ValueAnimator
@@ -67,7 +66,7 @@ fun PolylineMapObject?.select(resources: Resources) {
             .setDuration(ANIMATION_DURATION)
             .apply {
                 addUpdateListener { valueAnimator ->
-                    this@select?.strokeWidth = valueAnimator.animatedValue as Float
+                    this@select.strokeWidth = valueAnimator.animatedValue as Float
                 }
             })
     animatorSet.start()
@@ -111,5 +110,3 @@ fun getBaseIconStyle(): IconStyle {
         setAnchor(PointF(0.5f, 1.0f))
     }
 }
-
-fun LatLng.toPoint(): Point = Point(this.latitude, this.longitude)

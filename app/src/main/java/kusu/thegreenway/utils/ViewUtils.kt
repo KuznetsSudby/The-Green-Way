@@ -1,7 +1,9 @@
 package kusu.thegreenway.utils
 
 import android.content.Context
+import android.content.res.Resources
 import android.text.Editable
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
@@ -40,3 +42,14 @@ fun toast(context: Context, message: String) {
 }
 
 fun Exception.messageOr(def: String): String = localizedMessage ?: message ?: def
+
+val Int.dp: Int
+    get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+
+val Int.sp: Float
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    )
+

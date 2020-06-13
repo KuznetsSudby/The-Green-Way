@@ -3,12 +3,10 @@ package kusu.thegreenway.database.firestore
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.Source
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
-import com.google.type.LatLng
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
 import kusu.thegreenway.database.DB
@@ -16,6 +14,7 @@ import kusu.thegreenway.database.firestore.models.*
 import kusu.thegreenway.database.models.*
 import kusu.thegreenway.utils.Event
 import kusu.thegreenway.utils.Result
+import kusu.thegreenway.utils.toLatLng
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -153,12 +152,13 @@ class FirestoreDB @Inject constructor() : DB {
             routesMap[document.id] = Route(
                 id = document.id,
                 title = converted.title,
-                description = converted.description,
+                description = converted.description.replace("\\n", "\n").replace("\\t", "\t"),
+                minutes = converted.minutes,
                 lines = converted.lines.map { it.toLatLng() },
                 dots = converted.dots.map { dotsMap[it.id] }.filterNotNull(),
                 categories = converted.categories.map { categories[it.id] }.filterNotNull(),
                 difficulty = difficulties[converted.difficulty?.id ?: ""] ?: return@map,
-                travelTypes = converted.travelTypes.map { travelTypes[it.id] }.filterNotNull(),
+                travelTypes = converted.types.map { travelTypes[it.id] }.filterNotNull(),
                 images = converted.images,
                 animals = converted.animals,
                 approved = converted.approved,
@@ -190,8 +190,4 @@ enum class State {
     NO_DATA,
     LOADING,
     LOADED
-}
-
-fun GeoPoint.toLatLng(): LatLng {
-    return LatLng.newBuilder().setLatitude(latitude).setLongitude(longitude).build()
 }

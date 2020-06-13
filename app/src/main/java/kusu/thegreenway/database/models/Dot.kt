@@ -1,13 +1,13 @@
 package kusu.thegreenway.database.models
 
-import com.google.type.LatLng
+import kusu.thegreenway.utils.LatLngSerializable
 import java.io.Serializable
 
 data class Dot(
     val title: String,
     val description: String,
     val type: DotType,
-    val position: LatLng
+    val position: LatLngSerializable
 ) : Serializable {
 
     val isRouteSpecific: Boolean = type.onlyRoute

@@ -7,6 +7,11 @@ import dagger.android.AndroidInjector
 import dagger.android.support.AndroidSupportInjectionModule
 import kusu.thegreenway.database.firestore.FirestoreBinds
 import kusu.thegreenway.ui.main.MainModule
+import kusu.thegreenway.ui.main.account.AccountModule
+import kusu.thegreenway.ui.main.details.dot.DotDetailsModule
+import kusu.thegreenway.ui.main.details.dot.DotDetailsViewModel
+import kusu.thegreenway.ui.main.details.route.RouteDetailsModule
+import kusu.thegreenway.ui.main.favorites.FavoritesModule
 import kusu.thegreenway.ui.main.map.MapModule
 
 import javax.inject.Singleton
@@ -19,7 +24,11 @@ import javax.inject.Singleton
         AppModule::class,
         FirestoreBinds::class,
         MainModule::class,
-        MapModule::class
+        MapModule::class,
+        DotDetailsModule::class,
+        RouteDetailsModule::class,
+        AccountModule::class,
+        FavoritesModule::class
     ]
 )
 interface AppComponent : AndroidInjector<App> {

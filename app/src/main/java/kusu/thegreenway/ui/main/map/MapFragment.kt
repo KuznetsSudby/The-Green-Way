@@ -1,14 +1,26 @@
 package kusu.thegreenway.ui.main.map
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
+import androidx.navigation.fragment.findNavController
+import com.google.android.material.chip.Chip
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
@@ -18,52 +30,42 @@ import com.yandex.mapkit.logo.VerticalAlignment
 import com.yandex.mapkit.map.*
 import com.yandex.runtime.image.ImageProvider
 import dagger.android.support.DaggerFragment
-import kotlinx.android.synthetic.main.main_fragment.*
+import kotlinx.android.synthetic.main.f_map.*
+import kotlinx.android.synthetic.main.i_details_short.*
 import kusu.thegreenway.R
 import kusu.thegreenway.database.models.Dot
 import kusu.thegreenway.database.models.DotType
 import kusu.thegreenway.database.models.Route
-import kusu.thegreenway.utils.EventObserver
-import kusu.thegreenway.utils.messageOr
-import kusu.thegreenway.utils.observeVisibility
-import kusu.thegreenway.utils.toast
+import kusu.thegreenway.ui.main.favorites.common.DetailsHolder
+import kusu.thegreenway.utils.*
 import javax.inject.Inject
 
-class MapFragment : DaggerFragment(), MapObjectTapListener {
+class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    private val viewModel by viewModels<MapViewModel> { viewModelFactory }
+    private val viewModel by activityViewModels<MapViewModel> { viewModelFactory }
 
     val mapPoints: MutableList<MapObject> = ArrayList()
-
     var selectedRoute: PolylineMapObject? = null
     var selectedDot: PlacemarkMapObject? = null
+
+    lateinit var detailsHolder: DetailsHolder
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        return inflater.inflate(R.layout.f_map, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //TODO save previous camera position
-        mapView.map.move(
-            CameraPosition(TARGET_LOCATION, 8.0f, 0.0f, 0.0f),
-            Animation(Animation.Type.LINEAR, 0f),
-            null
-        )
-        mapView.map.move(
-            CameraPosition(TARGET_LOCATION, 11.0f, 0.0f, 0.0f),
-            Animation(Animation.Type.SMOOTH, 3f),
-            null
-        )
         mapView.map.logo.setAlignment(Alignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP))
-
         progressContainer.observeVisibility(viewLifecycleOwner, viewModel.dbLoading)
+
+        detailsHolder = DetailsHolder(descriptionShort)
+        detailsButton.setOnClickListener { openDetails(viewModel.getSelectedObject()) }
 
         viewModel.dbException.observe(viewLifecycleOwner, EventObserver {
             it.messageOr("Error").toast(requireContext())
@@ -76,29 +78,92 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { route ->
             route?.dots?.find { it.type.id == DotType.ROUTE_START }?.let { dot ->
                 mapView.map.move(
-                    CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f),
+                    CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f).savePosition(viewModel),
                     Animation(Animation.Type.SMOOTH, 1.5f),
                     null
                 )
             }
         })
         viewModel.showDescription.observe(viewLifecycleOwner, Observer { show ->
-            textLabel.text = viewModel.getDescriptionText()
-
-            val constraint = ConstraintSet()
-            constraint.clone(main)
-
-            if (show) {
-                constraint.connect(R.id.descriptionContainer, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
-                constraint.clear(R.id.descriptionContainer, ConstraintSet.TOP)
-            }else{
-                constraint.connect(R.id.descriptionContainer, ConstraintSet.TOP, R.id.mapView, ConstraintSet.BOTTOM)
-                constraint.clear(R.id.descriptionContainer, ConstraintSet.BOTTOM)
+            viewModel.getSelectedObject()?.let {
+                detailsHolder.bind(it, viewModel.favoritesModel)
             }
-
-            TransitionManager.beginDelayedTransition(main)
-            constraint.applyTo(main)
+            animateDescriptionContainer(show, selectedRoute == null)
         })
+        viewModel.favoritesModel.message.observe(viewLifecycleOwner, EventObserver {
+            Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+        })
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+        }
+    }
+
+    private fun openDetails(selectedObject: Any?) {
+        if (selectedObject == null)
+            return
+        when (selectedObject) {
+            is Dot -> {
+                findNavController().navigate(
+                    R.id.action_mapFragment_to_dotDetailsFragment, bundleOf(
+                        DETAILS to selectedObject
+                    )
+                )
+            }
+            is Route -> {
+                findNavController().navigate(
+                    R.id.action_mapFragment_to_routeDetailsFragment, bundleOf(
+                        DETAILS to selectedObject
+                    )
+                )
+            }
+        }
+    }
+
+    private fun moveCamera() {
+        viewModel.cameraPosition.value?.let { position ->
+            mapView.map.move(
+                position,
+                Animation(Animation.Type.LINEAR, 0f),
+                null
+            )
+        } ?: run {
+            mapView.map.move(
+                CameraPosition(TARGET_LOCATION, 8.5f, 0.0f, 0.0f),
+                Animation(Animation.Type.LINEAR, 0f),
+                null
+            )
+            mapView.map.move(
+                CameraPosition(TARGET_LOCATION, 11.0f, 0.0f, 0.0f).savePosition(viewModel),
+                Animation(Animation.Type.SMOOTH, 1.5f),
+                null
+            )
+        }
+
+        mapView.map.addCameraListener { map, cameraPosition, cameraUpdateSource, b ->
+            viewModel.savePosition(cameraPosition)
+        }
+
+    }
+
+    private fun animateDescriptionContainer(show: Boolean, isDot: Boolean) {
+        val constraint = ConstraintSet()
+        constraint.clone(main)
+
+        constraint.setVisibility(R.id.routeGroup, if (isDot) GONE else VISIBLE)
+        if (show) {
+            constraint.connect(R.id.descriptionContainer, ConstraintSet.BOTTOM, ConstraintSet.PARENT_ID, ConstraintSet.BOTTOM)
+            constraint.clear(R.id.descriptionContainer, ConstraintSet.TOP)
+        } else {
+            constraint.connect(R.id.descriptionContainer, ConstraintSet.TOP, R.id.mapView, ConstraintSet.BOTTOM)
+            constraint.clear(R.id.descriptionContainer, ConstraintSet.BOTTOM)
+        }
+
+        TransitionManager.beginDelayedTransition(main)
+        constraint.applyTo(main)
     }
 
     private fun reinitializeMapRoutes(routes: List<Route>) {
@@ -113,7 +178,7 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
             ).also { polyline ->
                 polyline.userData = route
                 polyline.addTapListener(this@MapFragment)
-                polyline.unselect(resources)
+                polyline.unselect(resources, viewModel.favoritesModel.toColor(route))
                 if (route.id == previousSelectedId) {
                     isFound = true
                     selectRoute(polyline)
@@ -126,14 +191,16 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     }
 
     private fun selectRoute(polyline: PolylineMapObject?) {
-        selectedRoute.unselect(resources)
+        selectedRoute?.let {
+            it.unselect(resources, viewModel.favoritesModel.toColor(it.userData as Route))
+        }
         selectDot(null)
         //TODO need clear optimization. Remove / add only dots difference. Also add animation for this
         clearDots()
         viewModel.selectRoute(polyline?.userData as Route?)
         selectedRoute = polyline
         selectedRoute?.let { route ->
-            route.select(resources)
+            route.select(resources, viewModel.favoritesModel.toColor(route.userData as Route))
             addDots((route.userData as Route).dots)
         } ?: run {
             addDots(viewModel.dots.value?.filter { it.isRouteSpecific.not() } ?: emptyList())
@@ -141,10 +208,10 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     }
 
     private fun selectDot(placemarkMapObject: PlacemarkMapObject?) {
-        selectedDot.unselect(resources)
+        selectedDot.unselect()
         selectedDot = placemarkMapObject
         viewModel.selectDot(placemarkMapObject?.userData as Dot?)
-        selectedDot.select(resources)
+        selectedDot.select()
     }
 
 
@@ -182,9 +249,12 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     private fun selectOnMap(mapObject: MapObject) {
         when (mapObject) {
             is PolylineMapObject -> {
-                if (selectedRoute == mapObject)
-                    selectRoute(null)
-                else
+                if (selectedRoute == mapObject) {
+                    if (selectedDot != null)
+                        selectDot(null)
+                    else
+                        selectRoute(null)
+                } else
                     selectRoute(mapObject)
             }
             is PlacemarkMapObject -> {
@@ -204,15 +274,35 @@ class MapFragment : DaggerFragment(), MapObjectTapListener {
     override fun onStart() {
         super.onStart()
         mapView.onStart()
+        moveCamera()
     }
 
-    companion object {
-        private val TARGET_LOCATION = Point(53.899916, 27.558904)
+    override fun onBackPressed(): Boolean {
+        if (selectedDot != null) {
+            selectDot(null)
+            return true
+        } else if (selectedRoute != null) {
+            selectRoute(null)
+            return true
+        }
+        return false
     }
 
     override fun onMapObjectTap(mapObject: MapObject, p1: Point): Boolean {
         selectOnMap(mapObject)
         return true
     }
+
+    companion object {
+
+        private val TARGET_LOCATION = Point(53.899916, 27.558904)
+
+        const val DETAILS = "details"
+    }
+}
+
+private fun CameraPosition.savePosition(viewModel: MapViewModel): CameraPosition {
+    viewModel.savePosition(this)
+    return this
 }
 

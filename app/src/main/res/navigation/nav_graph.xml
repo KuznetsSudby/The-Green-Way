@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/mapFragment">
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="kusu.thegreenway.ui.main.map.MapFragment">
+<!--     TODO   add animation-->
+        <action
+            android:id="@+id/action_mapFragment_to_dotDetailsFragment"
+            app:destination="@id/dotDetailsFragment"/>
+        <action
+            android:id="@+id/action_mapFragment_to_routeDetailsFragment"
+            app:destination="@id/routeDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="kusu.thegreenway.ui.main.favorites.FavoritesFragment">
+        <action
+            android:id="@+id/action_favoritesFragment_to_routeDetailsFragment"
+            app:destination="@id/routeDetailsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="kusu.thegreenway.ui.main.account.AccountFragment"/>
+
+    <fragment
+        android:id="@+id/dotDetailsFragment"
+        android:name="kusu.thegreenway.ui.main.details.dot.DotDetails">
+        <argument
+            android:name="details"
+            app:argType="kusu.thegreenway.database.models.Dot" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/routeDetailsFragment"
+        android:name="kusu.thegreenway.ui.main.details.route.RouteDetails">
+        <argument
+            android:name="details"
+            app:argType="kusu.thegreenway.database.models.Route" />
+    </fragment>
+</navigation>

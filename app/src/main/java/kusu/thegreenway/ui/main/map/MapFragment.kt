@@ -15,12 +15,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.chip.Chip
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
@@ -31,7 +28,6 @@ import com.yandex.mapkit.map.*
 import com.yandex.runtime.image.ImageProvider
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.f_map.*
-import kotlinx.android.synthetic.main.i_details_short.*
 import kusu.thegreenway.R
 import kusu.thegreenway.database.models.Dot
 import kusu.thegreenway.database.models.DotType
@@ -46,7 +42,8 @@ class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by activityViewModels<MapViewModel> { viewModelFactory }
 
-    val mapPoints: MutableList<MapObject> = ArrayList()
+    val mapDotsMap = HashMap<String, PlacemarkMapObject>()
+
     var selectedRoute: PolylineMapObject? = null
     var selectedDot: PlacemarkMapObject? = null
 
@@ -195,15 +192,13 @@ class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
             it.unselect(resources, viewModel.favoritesModel.toColor(it.userData as Route))
         }
         selectDot(null)
-        //TODO need clear optimization. Remove / add only dots difference. Also add animation for this
-        clearDots()
         viewModel.selectRoute(polyline?.userData as Route?)
         selectedRoute = polyline
         selectedRoute?.let { route ->
             route.select(resources, viewModel.favoritesModel.toColor(route.userData as Route))
-            addDots((route.userData as Route).dots)
+            setDots((route.userData as Route).dots)
         } ?: run {
-            addDots(viewModel.dots.value?.filter { it.isRouteSpecific.not() } ?: emptyList())
+            setDots(viewModel.dots.value?.filter { it.isRouteSpecific.not() } ?: emptyList())
         }
     }
 
@@ -215,34 +210,39 @@ class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
     }
 
 
-    private fun addDots(dots: List<Dot>) {
+    private fun setDots(dots: List<Dot>) {
+        val addDots = HashMap<String, PlacemarkMapObject>()
+        val removeDots = mapDotsMap.keys.map { it }.toMutableSet()
+
         dots.forEach { dot ->
-            mapView.map.mapObjects.addPlacemark(
-                dot.position.toPoint(),
-                ImageProvider.fromResource(
-                    requireContext(),
-                    dot.type.convertToIcon()
-                ),
-                getBaseIconStyle()
-            ).also { dotObject ->
-                dotObject.userData = dot
-                dotObject.addTapListener(this@MapFragment)
-                mapPoints.add(dotObject)
+            if (removeDots.contains(dot.id)){
+                removeDots.remove(dot.id)
+            }else{
+                addDots[dot.id] = mapView.map.mapObjects.addPlacemark(
+                    dot.position.toPoint(),
+                    ImageProvider.fromResource(
+                        requireContext(),
+                        dot.type.convertToIcon()
+                    ),
+                    getBaseIconStyle()
+                ).apply {
+                    userData = dot
+                    addTapListener(this@MapFragment)
+                    addAnimation()
+                }
             }
         }
-    }
 
-    private fun clearDots() {
-        mapPoints.forEach { dot ->
-            mapView.map.mapObjects.remove(dot)
+        mapDotsMap.putAll(addDots)
+        removeDots.forEach { key ->
+            mapDotsMap.remove(key)?.removeAnimation(mapView.map.mapObjects)
         }
-        mapPoints.clear()
     }
 
     private fun clearMap() {
         mapView.map.mapObjects.clear()
         selectedRoute = null
-        mapPoints.clear()
+        mapDotsMap.clear()
     }
 
 

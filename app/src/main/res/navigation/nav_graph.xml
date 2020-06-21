@@ -11,10 +11,18 @@
 <!--     TODO   add animation-->
         <action
             android:id="@+id/action_mapFragment_to_dotDetailsFragment"
-            app:destination="@id/dotDetailsFragment"/>
+            app:destination="@id/dotDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit" />
         <action
             android:id="@+id/action_mapFragment_to_routeDetailsFragment"
-            app:destination="@id/routeDetailsFragment" />
+            app:destination="@id/routeDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit"/>
     </fragment>
 
     <fragment
@@ -22,7 +30,11 @@
         android:name="kusu.thegreenway.ui.main.favorites.FavoritesFragment">
         <action
             android:id="@+id/action_favoritesFragment_to_routeDetailsFragment"
-            app:destination="@id/routeDetailsFragment" />
+            app:destination="@id/routeDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit"/>
     </fragment>
 
     <fragment

@@ -4,15 +4,14 @@ import android.animation.AnimatorSet
 import android.animation.ValueAnimator
 import android.content.res.Resources
 import android.graphics.PointF
-import com.yandex.mapkit.geometry.Point
-import com.yandex.mapkit.map.IconStyle
-import com.yandex.mapkit.map.PlacemarkMapObject
-import com.yandex.mapkit.map.PolylineMapObject
+import androidx.core.animation.addListener
+import com.yandex.mapkit.map.*
 import kusu.thegreenway.R
 import kusu.thegreenway.database.models.DotType
 import java.lang.RuntimeException
 
 const val ANIMATION_DURATION = 500L
+const val DOT_SCALE_ZERO = 0.0f
 const val DOT_SCALE = 1.0f
 const val DOT_SCALE_SELECTED = 1.4f
 const val LINE_WIDTH = 2f
@@ -104,6 +103,38 @@ fun PlacemarkMapObject?.select() {
         }
 }
 
+fun PlacemarkMapObject?.addAnimation() {
+    ValueAnimator
+        .ofFloat(DOT_SCALE_ZERO, DOT_SCALE)
+        .setDuration(ANIMATION_DURATION)
+        .apply {
+            addUpdateListener { value ->
+                this@addAnimation?.setIconStyle(
+                    getBaseIconStyle().setScale(value.animatedValue as Float)
+                )
+            }
+            start()
+        }
+}
+
+fun PlacemarkMapObject.removeAnimation(mapObjects: MapObjectCollection) {
+    ValueAnimator
+        .ofFloat(DOT_SCALE, DOT_SCALE_ZERO)
+        .setDuration(ANIMATION_DURATION)
+        .apply {
+            addUpdateListener { value ->
+                this@removeAnimation.setIconStyle(
+                    getBaseIconStyle().setScale(value.animatedValue as Float)
+                )
+            }
+            addListener(
+                onEnd = {
+                    mapObjects.remove(this@removeAnimation)
+                }
+            )
+            start()
+        }
+}
 
 fun getBaseIconStyle(): IconStyle {
     return IconStyle().apply {

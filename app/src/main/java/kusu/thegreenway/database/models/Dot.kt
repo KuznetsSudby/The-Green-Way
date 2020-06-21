@@ -4,6 +4,7 @@ import kusu.thegreenway.utils.LatLngSerializable
 import java.io.Serializable
 
 data class Dot(
+    val id: String,
     val title: String,
     val description: String,
     val type: DotType,

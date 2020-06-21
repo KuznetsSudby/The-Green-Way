@@ -12,6 +12,7 @@ import kotlinx.coroutines.tasks.await
 import kusu.thegreenway.database.DB
 import kusu.thegreenway.database.firestore.models.*
 import kusu.thegreenway.database.models.*
+import kusu.thegreenway.preferences.PreferencesRepository
 import kusu.thegreenway.utils.Event
 import kusu.thegreenway.utils.Result
 import kusu.thegreenway.utils.toLatLng
@@ -19,7 +20,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FirestoreDB @Inject constructor() : DB {
+class FirestoreDB @Inject constructor(
+    private val preferencesRepository: PreferencesRepository
+) : DB {
 
     private val firestore = Firebase.firestore.apply {
         firestoreSettings = firestoreSettings {
@@ -50,7 +53,6 @@ class FirestoreDB @Inject constructor() : DB {
     override val routes: LiveData<List<Route>> = _routes
     override val exception: LiveData<Event<Exception>> = _exception
 
-    //TODO add Source.CACHE logic
     override suspend fun loadData() {
         synchronized(state) {
             if (state.value != State.NO_DATA)
@@ -58,50 +60,70 @@ class FirestoreDB @Inject constructor() : DB {
             state.postValue(State.LOADING)
         }
 
+        loadFirestoreData(preferencesRepository.isLoadFromCache()).proceedResult(
+            success = { fromCache ->
+                if (!fromCache)
+                    preferencesRepository.updateTimeLoadFromCache()
+                _dots.postValue(dotsMap.values.toList())
+                _routes.postValue(routesMap.values.toList())
+                synchronized(state) {
+                    state.postValue(State.LOADED)
+                }
+            },
+            error = { exception ->
+                _exception.postValue(Event(exception))
+                synchronized(state) {
+                    state.postValue(State.NO_DATA)
+                }
+            }
+        )
+    }
+
+    private suspend fun loadFirestoreData(fromCache: Boolean): Result<Boolean> {
         val jobs = ArrayList<Deferred<Any>>()
         val jobRoutes = scope.async(Dispatchers.IO) {
             firestore.collection(ROUTES)
-                .get()
+                .get(if (fromCache) Source.CACHE else Source.DEFAULT)
                 .await()
                 .documents
         }.apply { jobs.add(this) }
         val jobCategories = scope.async(Dispatchers.IO) {
             firestore.collection(CATEGORIES)
-                .get()
+                .get(if (fromCache) Source.CACHE else Source.DEFAULT)
                 .await()
                 .documents
         }.apply { jobs.add(this) }
         val jobDots = scope.async(Dispatchers.IO) {
             firestore.collection(DOTS)
-                .get()
+                .get(if (fromCache) Source.CACHE else Source.DEFAULT)
                 .await()
                 .documents
         }.apply { jobs.add(this) }
         val jobDotTypes = scope.async(Dispatchers.IO) {
             firestore.collection(DOT_TYPES)
-                .get()
+                .get(if (fromCache) Source.CACHE else Source.DEFAULT)
                 .await()
                 .documents
         }.apply { jobs.add(this) }
         val jobTravelTypes = scope.async(Dispatchers.IO) {
             firestore.collection(TRAVEL_TYPES)
-                .get()
+                .get(if (fromCache) Source.CACHE else Source.DEFAULT)
                 .await()
                 .documents
         }.apply { jobs.add(this) }
         val jobDifficulties = scope.async(Dispatchers.IO) {
             firestore.collection(DIFFICULTIES)
-                .get()
+                .get(if (fromCache) Source.CACHE else Source.DEFAULT)
                 .await()
                 .documents
         }.apply { jobs.add(this) }
 
         jobs.awaitAll().find { it is Result.Error }?.let {
-            _exception.postValue(Event((it as Result.Error).exception))
-            synchronized(state) {
-                state.postValue(State.NO_DATA)
-            }
-            return
+            return it as Result.Error
+        }
+
+        if (jobDotTypes.getCompleted().size == 0 && fromCache) {
+            return loadFirestoreData(false)
         }
 
         jobDotTypes.getCompleted().forEach { document ->
@@ -140,6 +162,7 @@ class FirestoreDB @Inject constructor() : DB {
         jobDots.getCompleted().forEach { document ->
             val converted = document.toObject(FirestoreDot::class.java)!!
             dotsMap[document.id] = Dot(
+                id = document.id,
                 title = converted.title,
                 description = converted.description,
                 position = converted.position.toLatLng(),
@@ -167,12 +190,7 @@ class FirestoreDB @Inject constructor() : DB {
             )
         }
 
-        _dots.postValue(dotsMap.values.toList())
-        _routes.postValue(routesMap.values.toList())
-
-        synchronized(state) {
-            state.postValue(State.LOADED)
-        }
+        return Result.Success(fromCache)
     }
 
 

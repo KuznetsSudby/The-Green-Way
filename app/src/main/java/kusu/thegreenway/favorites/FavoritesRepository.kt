@@ -1,45 +1,32 @@
 package kusu.thegreenway.favorites
 
-import android.app.Activity
-import kusu.thegreenway.BuildConfig
-import kusu.thegreenway.app.App
-import kusu.thegreenway.auth.AuthRepository
-import kusu.thegreenway.preferences.PreferenceStringSet
+import kusu.thegreenway.preferences.PreferencesRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FavoritesRepository @Inject constructor(
-    val authRepository: AuthRepository,
-    val app: App
+    private val preferencesRepository: PreferencesRepository
 ) {
 
+    private var favoriteRoutes: Set<String> = hashSetOf()
+
     init {
-        authRepository.firebaseUserLiveData.observeForever {
-            reloadList()
+        preferencesRepository.userPreferencesUpdated.observeForever {
+            favoriteRoutes = preferencesRepository.favoriteRoutes.value
         }
     }
 
-    var favoriteRoutes = getFavoriteRoutesPreference()
+    fun isContainsRoute(id: String) = favoriteRoutes.contains(id)
 
-    private fun reloadList() {
-        favoriteRoutes = getFavoriteRoutesPreference()
+    private fun addRoute(id: String) {
+        favoriteRoutes = favoriteRoutes + id
+        preferencesRepository.saveFavoriteRoutes(favoriteRoutes)
     }
 
-    private fun getFavoriteRoutesPreference(): PreferenceStringSet {
-        return PreferenceStringSet(
-            key = PREF_ROUTES_LIST + authRepository.uid,
-            store = app.getSharedPreferences(BuildConfig.APPLICATION_ID, Activity.MODE_PRIVATE))
-    }
-
-    fun isContainsRoute(id: String) = favoriteRoutes.value.contains(id)
-
-    fun addRoute(id: String){
-        favoriteRoutes.value = favoriteRoutes.value + id
-    }
-
-    fun removeRoute(id: String){
-        favoriteRoutes.value = favoriteRoutes.value - id
+    private fun removeRoute(id: String) {
+        favoriteRoutes = favoriteRoutes - id
+        preferencesRepository.saveFavoriteRoutes(favoriteRoutes)
     }
 
     fun changeRoute(id: String) {
@@ -47,9 +34,5 @@ class FavoritesRepository @Inject constructor(
             removeRoute(id)
         else
             addRoute(id)
-    }
-
-    companion object{
-        const val PREF_ROUTES_LIST = "pref_routes_list_"
     }
 }

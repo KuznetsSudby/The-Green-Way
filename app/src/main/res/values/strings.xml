@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">TheGreenWay</string>
+    <string name="app_name">BY Guide</string>
     <string name="ui_time_value">%s мин</string>
     <string name="ui_with_child">Доступно с детьми</string>
     <string name="ui_with_animal">Доступно с животными</string>
     <string name="ui_with_disabilities">Доступно для людей с ограниченными возможностями</string>
-    <string name="ui_approved_by_team">Проверено и одобрено командой\n\"The Green Way\"</string>
+    <string name="ui_approved_by_team">Проверено и одобрено командой\n\"BY Guide\"</string>
     <string name="ui_title_map">Карта</string>
     <string name="ui_title_favorites">Избранное</string>
     <string name="ui_title_account">Профиль</string>

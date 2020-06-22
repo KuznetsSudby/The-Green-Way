@@ -66,15 +66,26 @@ class AccountFragment : DaggerFragment() {
                 )
             )
         }
-        authButton.setOnClickListener { auth() }
+        authGoogleButton.setOnClickListener {
+            auth(
+                AuthUI.IdpConfig.GoogleBuilder().build()
+            )
+        }
+        authFacebookButton.setOnClickListener {
+            auth(
+                AuthUI.IdpConfig.FacebookBuilder().build()
+            )
+        }
         exitButton.setOnClickListener { exit() }
 
         viewModel.isAuth.observe(viewLifecycleOwner, Observer { isAuth ->
             if (isAuth) {
-                authButton.visibility = GONE
+                authFacebookButton.visibility = GONE
+                authGoogleButton.visibility = GONE
                 exitButton.visibility = VISIBLE
             } else {
-                authButton.visibility = VISIBLE
+                authFacebookButton.visibility = VISIBLE
+                authGoogleButton.visibility = VISIBLE
                 exitButton.visibility = GONE
             }
         })
@@ -87,7 +98,7 @@ class AccountFragment : DaggerFragment() {
             } else {
                 userEmail.visibility = GONE
             }
-            if (user?.photoUrl != null){
+            if (user?.photoUrl != null) {
                 Picasso.get().load(user.photoUrl).error(R.drawable.ic_no_photo).into(userPhoto)
             } else {
                 userPhoto.setImageResource(R.drawable.ic_no_photo)
@@ -99,12 +110,9 @@ class AccountFragment : DaggerFragment() {
         AuthUI.getInstance().signOut(requireContext())
     }
 
-    fun auth() {
+    fun auth(provider: AuthUI.IdpConfig) {
         val providers = arrayListOf(
-            AuthUI
-                .IdpConfig
-                .GoogleBuilder()
-                .build()
+            provider
         )
 
         startActivityForResult(

@@ -2,4 +2,7 @@
 <resources>
     <string name="yandex_url" translatable="false">https://yandex.ru/legal/maps_termsofuse/</string>
     <string name="support_email" translatable="false">fastflowteam@yandex.ru</string>
+
+    <string name="facebook_application_id" translatable="false">301442454358971</string>
+    <string name="facebook_login_protocol_scheme" translatable="false">fb301442454358971</string>
 </resources>

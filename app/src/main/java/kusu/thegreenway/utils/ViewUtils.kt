@@ -1,8 +1,12 @@
 package kusu.thegreenway.utils
 
+import android.content.Context
+import android.content.res.Resources
 import android.text.Editable
+import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -28,3 +32,24 @@ fun EditText.asFlow() = callbackFlow {
         removeTextChangedListener(textChangedListener)
     }
 }
+
+fun String.toast(context: Context){
+    toast(context, this)
+}
+
+fun toast(context: Context, message: String) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+fun Exception.messageOr(def: String): String = localizedMessage ?: message ?: def
+
+val Int.dp: Int
+    get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
+
+val Int.sp: Float
+    get() = TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_SP,
+        this.toFloat(),
+        Resources.getSystem().displayMetrics
+    )
+

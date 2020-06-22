@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "264430629964",
+    "firebase_url": "https://thegreenway-f50d0.firebaseio.com",
+    "project_id": "thegreenway-f50d0",
+    "storage_bucket": "thegreenway-f50d0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264430629964:android:46373c768ecf20beff70e9",
+        "android_client_info": {
+          "package_name": "kusu.thegreenway"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264430629964-fc3nv9qt0g03egdkrolama080to801ss.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kusu.thegreenway",
+            "certificate_hash": "facada7a19d9b873cfd0b59af38498db0095b743"
+          }
+        },
+        {
+          "client_id": "264430629964-h56ecf2oecm3ksq5j5bo39j3sv1a2mrb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ-aFapyuGk0U5kMg9iNzTJCfMFZ0KqQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264430629964-h56ecf2oecm3ksq5j5bo39j3sv1a2mrb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

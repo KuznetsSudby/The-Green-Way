@@ -5,7 +5,7 @@ import kusu.thegreenway.database.models.Dot
 import kusu.thegreenway.database.models.Route
 import kusu.thegreenway.utils.Event
 
-interface DB {
+interface Database {
 
     val routes: LiveData<List<Route>>
     val dots: LiveData<List<Dot>>

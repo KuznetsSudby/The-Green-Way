@@ -46,6 +46,9 @@ fun Exception.messageOr(def: String): String = localizedMessage ?: message ?: de
 val Int.dp: Int
     get() = (this * Resources.getSystem().displayMetrics.density + 0.5f).toInt()
 
+val Float.dp: Float
+    get() = this * Resources.getSystem().displayMetrics.density
+
 val Int.sp: Float
     get() = TypedValue.applyDimension(
         TypedValue.COMPLEX_UNIT_SP,

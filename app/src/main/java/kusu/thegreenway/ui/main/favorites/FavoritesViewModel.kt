@@ -1,11 +1,11 @@
 package kusu.thegreenway.ui.main.favorites
 
 import androidx.lifecycle.ViewModel
-import kusu.thegreenway.database.DataBaseManager
+import kusu.thegreenway.database.DatabaseManager
 import javax.inject.Inject
 
 class FavoritesViewModel @Inject constructor(
-    dbManger: DataBaseManager,
+    dbManger: DatabaseManager,
     val favoritesModel: FavoritesModel
 ) : ViewModel() {
 

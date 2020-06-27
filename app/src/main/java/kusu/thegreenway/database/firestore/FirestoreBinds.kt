@@ -2,10 +2,10 @@ package kusu.thegreenway.database.firestore
 
 import dagger.Binds
 import dagger.Module
-import kusu.thegreenway.database.DB
+import kusu.thegreenway.database.Database
 
 @Module
 abstract class FirestoreBinds {
 
-    @Binds abstract fun bindFirestore(firestoreDB: FirestoreDB): DB
+    @Binds abstract fun bindFirestore(firestoreDB: FirestoreDatabase): Database
 }

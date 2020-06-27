@@ -9,7 +9,7 @@ import com.google.firebase.firestore.ktx.firestoreSettings
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.*
 import kotlinx.coroutines.tasks.await
-import kusu.thegreenway.database.DB
+import kusu.thegreenway.database.Database
 import kusu.thegreenway.database.firestore.models.*
 import kusu.thegreenway.database.models.*
 import kusu.thegreenway.preferences.PreferencesRepository
@@ -20,9 +20,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FirestoreDB @Inject constructor(
+class FirestoreDatabase @Inject constructor(
     private val preferencesRepository: PreferencesRepository
-) : DB {
+) : Database {
 
     private val firestore = Firebase.firestore.apply {
         firestoreSettings = firestoreSettings {

@@ -4,20 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.yandex.mapkit.map.CameraPosition
-import kusu.thegreenway.R
-import kusu.thegreenway.app.App
-import kusu.thegreenway.auth.AuthRepository
 import kusu.thegreenway.utils.CombineLiveData
-import kusu.thegreenway.database.DataBaseManager
+import kusu.thegreenway.database.DatabaseManager
 import kusu.thegreenway.database.models.Dot
 import kusu.thegreenway.database.models.Route
-import kusu.thegreenway.favorites.FavoritesRepository
 import kusu.thegreenway.ui.main.favorites.FavoritesModel
-import kusu.thegreenway.utils.Event
 import javax.inject.Inject
 
 class MapViewModel @Inject constructor(
-    dbManger: DataBaseManager,
+    dbManger: DatabaseManager,
     val favoritesModel: FavoritesModel
 ) : ViewModel() {
 

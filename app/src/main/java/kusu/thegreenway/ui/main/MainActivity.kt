@@ -6,15 +6,13 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.LabelVisibilityMode
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_SELECTED
 import com.yandex.mapkit.MapKitFactory
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.a_main.*
 import kusu.thegreenway.R
 import kusu.thegreenway.auth.AuthRepository
-import kusu.thegreenway.ui.main.map.MapFragment
-import kusu.thegreenway.utils.OnBackPressable
+import kusu.thegreenway.common.OnBackPressable
 import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {

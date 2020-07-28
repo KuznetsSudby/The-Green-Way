@@ -10,12 +10,13 @@ data class Route(
     val lines: List<LatLngSerializable>,
     val categories: List<Category>,
     val travelTypes: List<TravelType>,
-    val minutes: Int,
     val dots: List<Dot>,
     val difficulty: Difficulty,
     val images: List<String>,
     val animals: Boolean,
     val approved: Boolean,
     val children: Boolean,
-    val disabilities: Boolean
+    val disabilities: Boolean,
+    val distance: Double,
+    val durations: HashMap<String, Int>
 ) : Serializable

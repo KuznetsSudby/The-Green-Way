@@ -21,7 +21,7 @@ class DetailsHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                 itemView.routeGroup.visibility = View.VISIBLE
                 itemView.textLabel.text = obj.title
                 itemView.typeLabel.text = obj.difficulty.title
-                itemView.timeLabel.text = itemView.context.resources.getString(R.string.ui_time_value, obj.minutes.toString())
+                itemView.timeLabel.text = itemView.context.resources.getString(R.string.ui_distance_value, obj.distance.toString())
 
                 itemView.favoriteButton.setImageResource(favoritesModel.toResource(obj))
                 itemView.favoriteButton.setOnClickListener {

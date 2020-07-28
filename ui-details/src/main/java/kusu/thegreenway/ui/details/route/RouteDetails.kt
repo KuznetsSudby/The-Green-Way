@@ -1,13 +1,12 @@
 package kusu.thegreenway.ui.details.route
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.View.GONE
-import android.view.View.VISIBLE
+import android.view.View.*
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -32,7 +31,6 @@ import kusu.thegreenway.common.toast
 import kusu.thegreenway.navigation.NavGraphDirections
 import kusu.thegreenway.ui.details.R
 import javax.inject.Inject
-
 
 class RouteDetails : DaggerFragment() {
 
@@ -69,25 +67,13 @@ class RouteDetails : DaggerFragment() {
                 chipGroup.addView(chip as View)
             }
 
-            route.travelTypes.forEach {
-                (when (it.id) {
-                    TravelType.FOOT -> stepIcon
-                    TravelType.BIKE -> bikeIcon
-                    TravelType.HORSE -> horseIcon
-                    TravelType.SKI -> skiIcon
-                    TravelType.RAFTING -> raftingIcon
-                    else -> null
-                })?.visibility = VISIBLE
-            }
-
             favoriteButton.setImageResource(viewModel.favoritesModel.toResource(route))
             favoriteButton.setOnClickListener {
                 viewModel.favoritesModel.changeFavorite(route)
                 favoriteButton.setImageResource(viewModel.favoritesModel.toResource(route))
             }
 
-            difficultyLabel.text = route.difficulty.title
-            timeLabel.text = getString(R.string.ui_time_value, route.minutes.toString())
+            difficultyLabel.text = getString(R.string.ui_difficulty_and_distance, route.difficulty.title, route.distance.toString())
 
             approvedContainer.serVisible(route.approved)
             childIcon.setImageResource(if (route.children) R.drawable.ic_check else R.drawable.ic_cross)
@@ -123,6 +109,25 @@ class RouteDetails : DaggerFragment() {
             }
         })
 
+        viewModel.selectedType.observe(viewLifecycleOwner, Observer { type ->
+            viewModel.route.value?.let { route ->
+                route.travelTypes.forEach { trType ->
+                    (typeToView(trType))?.apply {
+                        visibility = VISIBLE
+                        alpha = 0.5f
+                        setOnClickListener {
+                            viewModel.selectType(trType)
+                        }
+                    }
+                }
+
+                (typeToView(type))?.alpha = 1.0f
+
+                timeLabel.visibility = if (route.durations[type.id] != null) VISIBLE else INVISIBLE
+                timeLabel.text = getString(R.string.ui_time_value, route.durations[type.id].toString())
+            }
+        })
+
         viewModel.favoritesModel.message.observe(viewLifecycleOwner, EventObserver {
             it.toast(requireContext())
         })
@@ -152,6 +157,17 @@ class RouteDetails : DaggerFragment() {
             }
         })
 
+    }
+
+    private fun typeToView(it: TravelType): ImageView? {
+        return when (it.id) {
+            TravelType.FOOT -> stepIcon
+            TravelType.BIKE -> bikeIcon
+            TravelType.HORSE -> horseIcon
+            TravelType.SKI -> skiIcon
+            TravelType.RAFTING -> raftingIcon
+            else -> null
+        }
     }
 
     fun openImage(images: List<String>, position: Int){

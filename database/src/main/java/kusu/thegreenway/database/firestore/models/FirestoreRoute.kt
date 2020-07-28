@@ -10,7 +10,6 @@ class FirestoreRoute : Serializable {
     val lines: List<GeoPoint> = emptyList()
     val categories: List<DocumentReference> = emptyList()
     val dots: List<DocumentReference> = emptyList()
-    val minutes = 0
     val types: List<DocumentReference> = emptyList()
     val difficulty: DocumentReference? = null
     val images: List<String> = emptyList()
@@ -18,4 +17,6 @@ class FirestoreRoute : Serializable {
     val approved: Boolean = false
     val children: Boolean = false
     val disabilities: Boolean = false
+    val distance: Double = 1.0
+    val durations = HashMap<String, Int>()
 }

@@ -19,4 +19,6 @@
     <string name="ui_exit_button">Выйти из аккаунта</string>
     <string name="ui_open_details">Подробнее</string>
     <string name="ui_need_auth">Необходимо авторизоваться</string>
+    <string name="ui_difficulty_and_distance">%s (%s км)</string>
+    <string name="ui_distance_value">%s км</string>
 </resources>

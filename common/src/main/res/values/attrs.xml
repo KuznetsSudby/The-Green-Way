@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="DiscreteLineViewAttrs">
-        <attr name="fill" format="color" />
+        <attr name="fillColor" format="color" />
         <attr name="segment" format="dimension" />
         <attr name="deviation" format="dimension" />
-        <attr name="top" format="boolean" />
+        <attr name="fillBottom" format="boolean" />
     </declare-styleable>
 </resources>

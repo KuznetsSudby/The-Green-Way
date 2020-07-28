@@ -176,7 +176,6 @@ class FirestoreDatabase @Inject constructor(
                 id = document.id,
                 title = converted.title,
                 description = converted.description.replace("\\n", "\n").replace("\\t", "\t"),
-                minutes = converted.minutes,
                 lines = converted.lines.map { it.toLatLng() },
                 dots = converted.dots.map { dotsMap[it.id] }.filterNotNull(),
                 categories = converted.categories.map { categories[it.id] }.filterNotNull(),
@@ -186,7 +185,9 @@ class FirestoreDatabase @Inject constructor(
                 animals = converted.animals,
                 approved = converted.approved,
                 children = converted.children,
-                disabilities = converted.disabilities
+                disabilities = converted.disabilities,
+                distance = converted.distance,
+                durations = converted.durations
             )
         }
 

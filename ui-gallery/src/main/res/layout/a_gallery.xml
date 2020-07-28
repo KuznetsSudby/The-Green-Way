@@ -19,7 +19,7 @@
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="@+id/viewPager"
         app:radius="4dp"
-        app:selectedFillColor="@color/colorAccent"
+        app:selectedFillColor="@color/colorPrimary"
         app:spacing="8dp"
         app:unselectedFillColor="@android:color/white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

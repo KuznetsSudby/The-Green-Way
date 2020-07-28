@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/mapFragment">
+
+    <action
+        android:id="@+id/actionOpenImage"
+        app:destination="@+id/oneImageActivity"
+        app:enterAnim="@anim/enter"
+        app:exitAnim="@anim/exit"
+        app:popEnterAnim="@anim/pop_enter"
+        app:popExitAnim="@anim/pop_exit" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="kusu.thegreenway.ui.map.MapFragment">
+        <action
+            android:id="@+id/action_mapFragment_to_dotDetailsFragment"
+            app:destination="@id/dotDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit" />
+        <action
+            android:id="@+id/action_mapFragment_to_routeDetailsFragment"
+            app:destination="@id/routeDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="kusu.thegreenway.ui.favorites.FavoritesFragment">
+        <action
+            android:id="@+id/action_favoritesFragment_to_routeDetailsFragment"
+            app:destination="@id/routeDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit"/>
+    </fragment>
+
+    <fragment
+        android:id="@+id/accountFragment"
+        android:name="kusu.thegreenway.account.ui.AccountFragment"/>
+
+    <fragment
+        android:id="@+id/dotDetailsFragment"
+        android:name="kusu.thegreenway.ui.details.dot.DotDetails">
+        <argument
+            android:name="details"
+            app:argType="kusu.thegreenway.common.models.Dot" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/routeDetailsFragment"
+        android:name="kusu.thegreenway.ui.details.route.RouteDetails">
+        <argument
+            android:name="details"
+            app:argType="kusu.thegreenway.common.models.Route" />
+    </fragment>
+
+    <activity
+        android:id="@+id/oneImageActivity"
+        android:name="kusu.thegreenway.gallery.ui.Image">
+        <argument
+            android:name="image"
+            app:argType="string" />
+    </activity>
+</navigation>

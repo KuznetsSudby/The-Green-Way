@@ -4,15 +4,13 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
-import dagger.android.support.AndroidSupportInjectionModule
+import kusu.thegreenway.account.ui.AccountModule
 import kusu.thegreenway.database.firestore.FirestoreBinds
+import kusu.thegreenway.ui.details.dot.DotDetailsModule
+import kusu.thegreenway.ui.details.route.RouteDetailsModule
+import kusu.thegreenway.ui.favorites.FavoritesModule
 import kusu.thegreenway.ui.main.MainModule
-import kusu.thegreenway.ui.main.account.AccountModule
-import kusu.thegreenway.ui.main.details.dot.DotDetailsModule
-import kusu.thegreenway.ui.main.details.dot.DotDetailsViewModel
-import kusu.thegreenway.ui.main.details.route.RouteDetailsModule
-import kusu.thegreenway.ui.main.favorites.FavoritesModule
-import kusu.thegreenway.ui.main.map.MapModule
+import kusu.thegreenway.ui.map.MapModule
 
 import javax.inject.Singleton
 

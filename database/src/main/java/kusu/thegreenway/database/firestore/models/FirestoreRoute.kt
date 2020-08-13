@@ -16,7 +16,8 @@ class FirestoreRoute : Serializable {
     val animals: Boolean = false
     val approved: Boolean = false
     val children: Boolean = false
-    val disabilities: Boolean = false
+    val visuallyImpaired: Boolean = false
+    val wheelchair: Boolean = false
     val distance: Double = 1.0
     val durations = HashMap<String, Int>()
 }

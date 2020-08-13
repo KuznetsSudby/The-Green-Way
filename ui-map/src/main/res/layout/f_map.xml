@@ -12,6 +12,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/compass"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/ic_compass"
+        android:padding="8dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/background_compass"/>
+
     <LinearLayout
         android:id="@+id/progressContainer"
         android:layout_width="match_parent"

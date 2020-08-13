@@ -60,27 +60,33 @@ class FirestoreDatabase @Inject constructor(
             state.postValue(State.LOADING)
         }
 
-        loadFirestoreData(preferencesRepository.isLoadFromCache()).proceedResult(
-            success = { fromCache ->
-                if (!fromCache)
-                    preferencesRepository.updateTimeLoadFromCache()
-                _dots.postValue(dotsMap.values.toList())
-                _routes.postValue(routesMap.values.toList())
-                synchronized(state) {
-                    state.postValue(State.LOADED)
+        try {
+            loadFirestoreData(preferencesRepository.isLoadFromCache()).proceedResult(
+                success = { fromCache ->
+                    if (!fromCache)
+                        preferencesRepository.updateTimeLoadFromCache()
+                    _dots.postValue(dotsMap.values.toList())
+                    _routes.postValue(routesMap.values.toList().sortedBy { it.title })
+                    synchronized(state) {
+                        state.postValue(State.LOADED)
+                    }
+                },
+                error = { exception ->
+                    _exception.postValue(Event(exception))
+                    synchronized(state) {
+                        state.postValue(State.NO_DATA)
+                    }
                 }
-            },
-            error = { exception ->
-                _exception.postValue(Event(exception))
-                synchronized(state) {
-                    state.postValue(State.NO_DATA)
-                }
-            }
-        )
+            )
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
     private suspend fun loadFirestoreData(fromCache: Boolean): Result<Boolean> {
         val jobs = ArrayList<Deferred<Any>>()
+
         val jobRoutes = scope.async(Dispatchers.IO) {
             firestore.collection(ROUTES)
                 .get(if (fromCache) Source.CACHE else Source.DEFAULT)
@@ -185,7 +191,8 @@ class FirestoreDatabase @Inject constructor(
                 animals = converted.animals,
                 approved = converted.approved,
                 children = converted.children,
-                disabilities = converted.disabilities,
+                visuallyImpaired = converted.visuallyImpaired,
+                wheelchair = converted.wheelchair,
                 distance = converted.distance,
                 durations = converted.durations
             )

@@ -8,7 +8,7 @@ import kusu.thegreenway.favorites.FavoritesModel
 import kusu.thegreenway.ui.favorites.R
 
 class DetailsAdapter(
-    val items: List<Route>,
+    val items: MutableList<Route>,
     val favoritesModel: FavoritesModel,
     private val onRouteClick: (route: Route) -> Unit
 ) : RecyclerView.Adapter<DetailsHolder>() {
@@ -23,7 +23,10 @@ class DetailsAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun onBindViewHolder(holder: DetailsHolder, position: Int) {
-        holder.bind(items[position], favoritesModel)
+        holder.bind(items[position], favoritesModel){
+            items.remove(it)
+            notifyItemRemoved(position)
+        }
         holder.itemView.setOnClickListener {
             onRouteClick.invoke(items[position])
         }

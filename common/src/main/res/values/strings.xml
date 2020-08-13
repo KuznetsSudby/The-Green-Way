@@ -3,10 +3,10 @@
     <string name="ui_time_value">%s мин</string>
     <string name="ui_with_child">Доступно с детьми</string>
     <string name="ui_with_animal">Доступно с животными</string>
-    <string name="ui_with_disabilities">Доступно для людей с ограниченными возможностями</string>
     <string name="ui_approved_by_team">Проверено и одобрено командой\n\"BY Guide\"</string>
     <string name="ui_title_map">Карта</string>
     <string name="ui_title_favorites">Избранное</string>
+    <string name="ui_title_routes">Маршруты</string>
     <string name="ui_title_account">Профиль</string>
     <string name="ui_version_label">Версия приложения %s</string>
     <string name="ui_yandex_button">Условия использования Яндекс.Карт</string>
@@ -21,4 +21,6 @@
     <string name="ui_need_auth">Необходимо авторизоваться</string>
     <string name="ui_difficulty_and_distance">%s (%s км)</string>
     <string name="ui_distance_value">%s км</string>
+    <string name="ui_with_visually_impaired">Доступно для людей с нарушением зрения</string>
+    <string name="ui_with_wheelchair">Доступно для людей на коляске</string>
 </resources>

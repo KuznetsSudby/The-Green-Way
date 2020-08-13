@@ -50,7 +50,10 @@ class FavoritesFragment : DaggerFragment() {
         list.addItemDecoration(DetailsDecorator(requireContext()))
 
         viewModel.routes.observe(viewLifecycleOwner, Observer {
-            list.adapter = DetailsAdapter(it, viewModel.favoritesModel, ::openRoute)
+            list.adapter = DetailsAdapter(
+                it.filter { viewModel.favoritesModel.isRouteFavorite(it) }.toMutableList(),
+                viewModel.favoritesModel,
+                ::openRoute)
         })
     }
 

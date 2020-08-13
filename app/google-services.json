@@ -42,6 +42,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:264430629964:android:1a3433f0713072dfff70e9",
+        "android_client_info": {
+          "package_name": "kusu.thegreenway.my"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "264430629964-h56ecf2oecm3ksq5j5bo39j3sv1a2mrb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQ-aFapyuGk0U5kMg9iNzTJCfMFZ0KqQM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "264430629964-h56ecf2oecm3ksq5j5bo39j3sv1a2mrb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

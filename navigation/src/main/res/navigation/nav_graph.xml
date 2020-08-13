@@ -45,6 +45,18 @@
     </fragment>
 
     <fragment
+        android:id="@+id/routesFragment"
+        android:name="kusu.thegreenway.ui.routes.RoutesFragment">
+        <action
+            android:id="@+id/action_routesFragment_to_routeDetailsFragment"
+            app:destination="@id/routeDetailsFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit"/>
+    </fragment>
+
+    <fragment
         android:id="@+id/accountFragment"
         android:name="kusu.thegreenway.account.ui.AccountFragment"/>
 

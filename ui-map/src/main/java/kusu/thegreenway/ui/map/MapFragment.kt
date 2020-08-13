@@ -131,8 +131,9 @@ class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
 
         mapView.map.addCameraListener { map, cameraPosition, cameraUpdateSource, b ->
             viewModel.savePosition(cameraPosition)
+            compass.rotation = -cameraPosition.azimuth
+            println("ExcM Save position")
         }
-
     }
 
     private fun animateDescriptionContainer(show: Boolean, isDot: Boolean) {
@@ -204,9 +205,9 @@ class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
         val removeDots = mapDotsMap.keys.map { it }.toMutableSet()
 
         dots.forEach { dot ->
-            if (removeDots.contains(dot.id)){
+            if (removeDots.contains(dot.id)) {
                 removeDots.remove(dot.id)
-            }else{
+            } else {
                 addDots[dot.id] = mapView.map.mapObjects.addPlacemark(
                     dot.position.toPoint(),
                     ImageProvider.fromResource(

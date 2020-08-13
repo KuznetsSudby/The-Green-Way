@@ -16,7 +16,8 @@ data class Route(
     val animals: Boolean,
     val approved: Boolean,
     val children: Boolean,
-    val disabilities: Boolean,
+    val visuallyImpaired: Boolean,
+    val wheelchair: Boolean,
     val distance: Double,
     val durations: HashMap<String, Int>
 ) : Serializable

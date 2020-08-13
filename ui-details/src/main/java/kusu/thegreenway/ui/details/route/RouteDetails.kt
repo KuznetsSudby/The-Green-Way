@@ -1,12 +1,14 @@
 package kusu.thegreenway.ui.details.route
 
 import android.os.Bundle
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.*
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -54,7 +56,7 @@ class RouteDetails : DaggerFragment() {
 
         viewModel.route.observe(viewLifecycleOwner, Observer { route ->
             routeTitle.text = route.title
-            routeDescription.text = route.description
+            routeDescription.setText(HtmlCompat.fromHtml(route.description, HtmlCompat.FROM_HTML_MODE_LEGACY))
 
             viewPager.adapter = ImagesAdapter(route.images, ::openImage)
             indicator.attachTo(viewPager)
@@ -77,7 +79,8 @@ class RouteDetails : DaggerFragment() {
 
             approvedContainer.serVisible(route.approved)
             childIcon.setImageResource(if (route.children) R.drawable.ic_check else R.drawable.ic_cross)
-            disabilitiesIcon.setImageResource(if (route.disabilities) R.drawable.ic_check else R.drawable.ic_cross)
+            visuallyImpairedIcon.setImageResource(if (route.visuallyImpaired) R.drawable.ic_check else R.drawable.ic_cross)
+            wheelchairIcon.setImageResource(if (route.wheelchair) R.drawable.ic_check else R.drawable.ic_cross)
             animalIcon.setImageResource(if (route.animals) R.drawable.ic_check else R.drawable.ic_cross)
 
             mapView.map.mapObjects.addPolyline(

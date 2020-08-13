@@ -6,6 +6,11 @@
         android:title="@string/ui_title_map" />
 
     <item
+        android:id="@+id/routesFragment"
+        android:icon="@drawable/ic_routes"
+        android:title="@string/ui_title_routes" />
+
+    <item
         android:id="@+id/favoritesFragment"
         android:icon="@drawable/ic_favorites"
         android:title="@string/ui_title_favorites" />

@@ -11,7 +11,7 @@ import kusu.thegreenway.ui.favorites.R
 
 class DetailsHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
 
-    fun bind(obj: Any, favoritesModel: FavoritesModel){
+    fun bind(obj: Any, favoritesModel: FavoritesModel, changeFavorites: (Route) -> Unit){
         itemView.routeGroup.visibility = View.GONE
         when (obj) {
             is Dot -> {
@@ -28,6 +28,7 @@ class DetailsHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
                 itemView.favoriteButton.setOnClickListener {
                     favoritesModel.changeFavorite(obj)
                     itemView.favoriteButton.setImageResource(favoritesModel.toResource(obj))
+                    changeFavorites.invoke(obj)
                 }
 
                 itemView.chipGroup.removeAllViews()

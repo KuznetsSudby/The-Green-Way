@@ -177,7 +177,7 @@
             android:layout_marginTop="@dimen/space"
             android:layout_marginEnd="@dimen/space"
             android:textColor="@color/description"
-            android:textSize="14sp"
+            android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/additionalBlock"
             tools:text="sdfghjkldfghjkcfgvghj" />
@@ -238,7 +238,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/disabilitiesContainer"
+            android:id="@+id/visuallyImpairedContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/line1"
@@ -253,12 +253,39 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/ui_with_disabilities"
+                android:text="@string/ui_with_visually_impaired"
                 android:textColor="@android:color/black"
                 android:textSize="12sp" />
 
             <ImageView
-                android:id="@+id/disabilitiesIcon"
+                android:id="@+id/visuallyImpairedIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_check" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/wheelchairContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/line2"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/space"
+            android:paddingTop="@dimen/space.half"
+            android:paddingEnd="@dimen/space"
+            android:paddingBottom="@dimen/space.half"
+            app:layout_constraintTop_toBottomOf="@+id/visuallyImpairedContainer">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ui_with_wheelchair"
+                android:textColor="@android:color/black"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/wheelchairIcon"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_check" />
@@ -274,7 +301,7 @@
             android:background="@drawable/background_approved"
             android:gravity="center_vertical"
             android:padding="@dimen/space"
-            app:layout_constraintTop_toBottomOf="@id/disabilitiesContainer">
+            app:layout_constraintTop_toBottomOf="@id/wheelchairContainer">
 
             <ImageView
                 android:id="@+id/approvedIcon"

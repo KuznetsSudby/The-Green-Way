@@ -23,4 +23,6 @@
     <string name="ui_distance_value">%s км</string>
     <string name="ui_with_visually_impaired">Доступно для людей с нарушением зрения</string>
     <string name="ui_with_wheelchair">Доступно для людей на коляске</string>
+    <string name="ui_find_error_send_mail">Заметили ошибку? Напишите нам!</string>
+    <string name="ui_email_from_route">Я заметил ошибку в маршруте "%s" [%s]\n\n</string>
 </resources>

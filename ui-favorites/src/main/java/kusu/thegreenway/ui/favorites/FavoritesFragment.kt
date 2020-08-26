@@ -21,19 +21,11 @@ import kusu.thegreenway.common.models.Route
 import kusu.thegreenway.common.toast
 import javax.inject.Inject
 
-class FavoritesFragment : DaggerFragment() {
+class FavoritesFragment : DaggerFragment(R.layout.f_favorites) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by viewModels<FavoritesViewModel> { viewModelFactory }
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.f_favorites, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,7 +1,11 @@
 package kusu.thegreenway.ui.details.route
 
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Html
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -25,29 +29,19 @@ import kusu.thegreenway.common.models.DotType
 import kusu.thegreenway.common.models.Route
 import kusu.thegreenway.common.models.TravelType
 import kusu.thegreenway.common.EventObserver
-import kusu.thegreenway.common.map.convertToIcon
-import kusu.thegreenway.common.map.getBaseIconStyle
-import kusu.thegreenway.common.map.select
-import kusu.thegreenway.common.map.toPoint
+import kusu.thegreenway.common.map.*
 import kusu.thegreenway.common.toast
 import kusu.thegreenway.navigation.NavGraphDirections
 import kusu.thegreenway.ui.details.R
 import javax.inject.Inject
 
-class RouteDetails : DaggerFragment() {
+class RouteDetails : DaggerFragment(R.layout.f_route_details) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by viewModels<RouteDetailsViewModel> { viewModelFactory }
 
     val args: RouteDetailsArgs by navArgs()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.f_route_details, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -56,7 +50,8 @@ class RouteDetails : DaggerFragment() {
 
         viewModel.route.observe(viewLifecycleOwner, Observer { route ->
             routeTitle.text = route.title
-            routeDescription.setText(HtmlCompat.fromHtml(route.description, HtmlCompat.FROM_HTML_MODE_LEGACY))
+            routeDescription.text = HtmlCompat.fromHtml(route.description, HtmlCompat.FROM_HTML_MODE_LEGACY)
+            routeDescription.movementMethod = LinkMovementMethod.getInstance()
 
             viewPager.adapter = ImagesAdapter(route.images, ::openImage)
             indicator.attachTo(viewPager)
@@ -108,6 +103,34 @@ class RouteDetails : DaggerFragment() {
                         dot.type.convertToIcon()
                     ),
                     getBaseIconStyle()
+                )
+            }
+
+            fullScreen.setOnClickListener {
+                findNavController().navigate(
+                    RouteDetailsDirections.openMap(
+                        route,
+                        CameraPositionSerializable(
+                            mapView.map.cameraPosition.target.latitude,
+                            mapView.map.cameraPosition.target.longitude,
+                            mapView.map.cameraPosition.zoom,
+                            mapView.map.cameraPosition.azimuth,
+                            mapView.map.cameraPosition.tilt
+                        )
+                    )
+                )
+            }
+
+            mailButton.setOnClickListener {
+                val sendIntent = Intent(Intent.ACTION_SEND)
+                sendIntent.type = "plain/text"
+                sendIntent.putExtra(Intent.EXTRA_EMAIL, arrayOf(getString(R.string.support_email)))
+                sendIntent.putExtra(Intent.EXTRA_TEXT, getString(R.string.ui_email_from_route, route.title, route.id))
+                startActivity(
+                    Intent.createChooser(
+                        sendIntent,
+                        getString(R.string.ui_support_button)
+                    )
                 )
             }
         })
@@ -173,7 +196,7 @@ class RouteDetails : DaggerFragment() {
         }
     }
 
-    fun openImage(images: List<String>, position: Int){
+    fun openImage(images: List<String>, position: Int) {
         //Todo fix problem "viewPager2" + "TouchImageView"
 //        val intent = Intent(requireContext(), Gallery::class.java)
 //        intent.putExtra(Gallery.POSITION, position)

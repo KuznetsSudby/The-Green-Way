@@ -3,6 +3,7 @@ package kusu.thegreenway.ui.map
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import kusu.thegreenway.common.CombineLiveData
 import kusu.thegreenway.database.DatabaseManager
@@ -54,5 +55,14 @@ class MapViewModel @Inject constructor(
 
     fun savePosition(position: CameraPosition) {
         _cameraPosition.postValue(position)
+    }
+
+    fun initialize(args: MapFragmentArgs) {
+        if (args.route != null){
+            _selectedItem.value = args.route
+            args.camera?.let{
+                _cameraPosition.value = it.toCameraPosition()
+            }
+        }
     }
 }

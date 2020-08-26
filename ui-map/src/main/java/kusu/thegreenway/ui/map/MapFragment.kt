@@ -16,6 +16,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
@@ -33,7 +34,7 @@ import kusu.thegreenway.common.models.DotType
 import kusu.thegreenway.common.models.Route
 import javax.inject.Inject
 
-class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
+class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBackPressable {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -44,17 +45,15 @@ class MapFragment : DaggerFragment(), MapObjectTapListener, OnBackPressable {
     var selectedRoute: PolylineMapObject? = null
     var selectedDot: PlacemarkMapObject? = null
 
-    lateinit var detailsHolder: DetailsHolder
+    val args: MapFragmentArgs by navArgs()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.f_map, container, false)
-    }
+    lateinit var detailsHolder: DetailsHolder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel.initialize(args)
+
         mapView.map.logo.setAlignment(Alignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP))
         progressContainer.observeVisibility(viewLifecycleOwner, viewModel.dbLoading)
 

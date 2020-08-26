@@ -3,17 +3,25 @@ package kusu.thegreenway.ui.routes
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.f_routes.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.debounce
 
 import kusu.thegreenway.common.EventObserver
+import kusu.thegreenway.common.asFlow
 import kusu.thegreenway.common.messageOr
 import kusu.thegreenway.common.models.Route
 import kusu.thegreenway.common.toast
@@ -21,19 +29,13 @@ import kusu.thegreenway.ui.routes.common.DetailsAdapter
 import kusu.thegreenway.ui.routes.common.DetailsDecorator
 import javax.inject.Inject
 
-class RoutesFragment : DaggerFragment() {
+@ExperimentalCoroutinesApi
+@InternalCoroutinesApi
+class RoutesFragment : DaggerFragment(R.layout.f_routes) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by viewModels<RoutesViewModel> { viewModelFactory }
-
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.f_routes, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -49,9 +51,26 @@ class RoutesFragment : DaggerFragment() {
         list.layoutManager = LinearLayoutManager(requireContext())
         list.addItemDecoration(DetailsDecorator(requireContext()))
 
-        viewModel.routes.observe(viewLifecycleOwner, Observer {
+        viewModel.screenRoutes.observe(viewLifecycleOwner, Observer {
             list.adapter = DetailsAdapter(it, viewModel.favoritesModel, ::openRoute)
         })
+
+        lifecycleScope.launchWhenResumed {
+            searchEdit.asFlow().debounce(300).collect {value ->
+                viewModel.setSearch(value)
+            }
+        }
+
+        viewModel.search.observe(viewLifecycleOwner, Observer {
+            clear.visibility = if (it.isEmpty()) GONE else VISIBLE
+            if (searchEdit.text.toString() != it){
+                searchEdit.setText(it)
+            }
+        })
+
+        clear.setOnClickListener {
+            viewModel.clearSearch()
+        }
     }
 
     private fun openRoute(route: Route) {

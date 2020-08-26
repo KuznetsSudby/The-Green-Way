@@ -52,6 +52,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "264430629964-3vtq8j6j6noql96ogk5plrqgs4ef9s06.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kusu.thegreenway.my",
+            "certificate_hash": "facada7a19d9b873cfd0b59af38498db0095b743"
+          }
+        },
+        {
           "client_id": "264430629964-h56ecf2oecm3ksq5j5bo39j3sv1a2mrb.apps.googleusercontent.com",
           "client_type": 3
         }

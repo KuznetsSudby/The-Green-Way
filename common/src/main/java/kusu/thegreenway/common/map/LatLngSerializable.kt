@@ -4,7 +4,7 @@ import com.google.firebase.firestore.GeoPoint
 import com.yandex.mapkit.geometry.Point
 import java.io.Serializable
 
-class LatLngSerializable(
+open class LatLngSerializable(
     val latitude: Double,
     val longitude: Double
 ) : Serializable {

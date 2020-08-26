@@ -22,20 +22,13 @@ import kusu.thegreenway.common.map.toPoint
 import kusu.thegreenway.ui.details.R
 import javax.inject.Inject
 
-class DotDetails : DaggerFragment() {
+class DotDetails : DaggerFragment(R.layout.f_dot_details) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
     private val viewModel by viewModels<DotDetailsViewModel> { viewModelFactory }
 
     val args: DotDetailsArgs by navArgs()
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return inflater.inflate(R.layout.f_dot_details, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

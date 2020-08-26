@@ -29,7 +29,19 @@
             app:enterAnim="@anim/enter"
             app:exitAnim="@anim/exit"
             app:popEnterAnim="@anim/pop_enter"
-            app:popExitAnim="@anim/pop_exit"/>
+            app:popExitAnim="@anim/pop_exit" />
+
+        <argument
+            android:name="route"
+            android:defaultValue="@null"
+            app:argType="kusu.thegreenway.common.models.Route"
+            app:nullable="true" />
+        <argument
+            android:name="camera"
+            android:defaultValue="@null"
+            app:argType="kusu.thegreenway.common.map.CameraPositionSerializable"
+            app:nullable="true" />
+
     </fragment>
 
     <fragment
@@ -41,7 +53,7 @@
             app:enterAnim="@anim/enter"
             app:exitAnim="@anim/exit"
             app:popEnterAnim="@anim/pop_enter"
-            app:popExitAnim="@anim/pop_exit"/>
+            app:popExitAnim="@anim/pop_exit" />
     </fragment>
 
     <fragment
@@ -53,12 +65,12 @@
             app:enterAnim="@anim/enter"
             app:exitAnim="@anim/exit"
             app:popEnterAnim="@anim/pop_enter"
-            app:popExitAnim="@anim/pop_exit"/>
+            app:popExitAnim="@anim/pop_exit" />
     </fragment>
 
     <fragment
         android:id="@+id/accountFragment"
-        android:name="kusu.thegreenway.account.ui.AccountFragment"/>
+        android:name="kusu.thegreenway.account.ui.AccountFragment" />
 
     <fragment
         android:id="@+id/dotDetailsFragment"
@@ -74,6 +86,17 @@
         <argument
             android:name="details"
             app:argType="kusu.thegreenway.common.models.Route" />
+
+        <action
+            android:id="@+id/openMap"
+            app:destination="@+id/mapFragment"
+            app:enterAnim="@anim/enter"
+            app:exitAnim="@anim/exit"
+            app:launchSingleTop="true"
+            app:popEnterAnim="@anim/pop_enter"
+            app:popExitAnim="@anim/pop_exit"
+            app:popUpTo="@+id/nav_graph"
+            app:popUpToInclusive="true" />
     </fragment>
 
     <activity

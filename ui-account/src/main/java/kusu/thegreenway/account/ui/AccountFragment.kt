@@ -23,7 +23,7 @@ import javax.inject.Inject
 import javax.inject.Named
 
 
-class AccountFragment : DaggerFragment() {
+class AccountFragment : DaggerFragment(R.layout.f_account) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -31,13 +31,6 @@ class AccountFragment : DaggerFragment() {
 
     @Inject
     lateinit var config: Config
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.f_account, container, false)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

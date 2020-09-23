@@ -1,14 +1,15 @@
 package kusu.thegreenway.ui.map
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.PointF
+import android.location.LocationManager
 import android.os.Bundle
 import android.transition.TransitionManager
-import android.view.LayoutInflater
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
-import android.view.ViewGroup
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -18,13 +19,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.yandex.mapkit.Animation
+import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.geometry.Polyline
+import com.yandex.mapkit.layers.ObjectEvent
 import com.yandex.mapkit.logo.Alignment
 import com.yandex.mapkit.logo.HorizontalAlignment
 import com.yandex.mapkit.logo.VerticalAlignment
 import com.yandex.mapkit.map.*
+import com.yandex.mapkit.map.internal.CompositeIconBinding
+import com.yandex.mapkit.user_location.UserLocationObjectListener
+import com.yandex.mapkit.user_location.UserLocationView
 import com.yandex.runtime.image.ImageProvider
+import com.yandex.runtime.image.ImageProvider.fromResource
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.f_map.*
 import kusu.thegreenway.common.*
@@ -33,6 +40,7 @@ import kusu.thegreenway.common.models.Dot
 import kusu.thegreenway.common.models.DotType
 import kusu.thegreenway.common.models.Route
 import javax.inject.Inject
+
 
 class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBackPressable {
 
@@ -47,14 +55,16 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
 
     val args: MapFragmentArgs by navArgs()
 
+    var startPosition = TARGET_LOCATION
+
     lateinit var detailsHolder: DetailsHolder
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.initialize(args)
-
         mapView.map.logo.setAlignment(Alignment(HorizontalAlignment.RIGHT, VerticalAlignment.TOP))
+
         progressContainer.observeVisibility(viewLifecycleOwner, viewModel.dbLoading)
 
         detailsHolder = DetailsHolder(descriptionShort)
@@ -89,9 +99,76 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 0)
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                0
+            )
+        } else {
+            val mapKit = MapKitFactory.getInstance()
+            val userLocationLayer = mapKit.createUserLocationLayer(mapView.mapWindow)
+            userLocationLayer.isVisible = true
+            userLocationLayer.isHeadingEnabled = false
+            userLocationLayer.setObjectListener(object : UserLocationObjectListener {
+
+                override fun onObjectUpdated(userLocationView: UserLocationView, p1: ObjectEvent) {
+//                    userLocationLayer.resetAnchor()
+                    val pinIcon = userLocationView.getPin().useCompositeIcon();
+                    pinIcon.setIcon(
+                        "pin", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
+                            .setRotationType(RotationType.ROTATE)
+                            .setZIndex(1f)
+                            .setScale(0.5f)
+                    )
+                    pinIcon.setIcon(
+                        "icon", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
+                            .setRotationType(RotationType.ROTATE)
+                            .setZIndex(0f)
+                            .setScale(1f)
+                    )
+                    userLocationView.accuracyCircle.fillColor = resources.getColor(R.color.map_alpha)
+                }
+
+                override fun onObjectRemoved(p0: UserLocationView) {
+                }
+
+                override fun onObjectAdded(userLocationView: UserLocationView) {
+                    val pinIcon = userLocationView.getPin().useCompositeIcon();
+                    pinIcon.setIcon(
+                        "pin", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
+                            .setRotationType(RotationType.ROTATE)
+                            .setZIndex(1f)
+                            .setScale(0.5f)
+                    )
+                    pinIcon.setIcon(
+                        "icon", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
+                            .setRotationType(RotationType.ROTATE)
+                            .setZIndex(0f)
+                            .setScale(1f)
+                    )
+                    userLocationView.accuracyCircle.fillColor = resources.getColor(R.color.map_alpha)
+                }
+            })
+            userLocationLayer.cameraPosition()?.let {
+                startPosition = it.target
+            }
+            userLocationLayer.resetAnchor()
+
+            val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val lastGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+            val lastNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
+
+            if (lastGps != null) {
+                startPosition = Point(lastGps.latitude, lastGps.longitude)
+            } else if (lastNetwork != null) {
+                startPosition = Point(lastNetwork.latitude, lastNetwork.longitude)
+            }
         }
     }
 
@@ -117,12 +194,12 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
             )
         } ?: run {
             mapView.map.move(
-                CameraPosition(TARGET_LOCATION, 8.5f, 0.0f, 0.0f),
+                CameraPosition(startPosition, 9f, 0.0f, 0.0f), //8.5f
                 Animation(Animation.Type.LINEAR, 0f),
                 null
             )
             mapView.map.move(
-                CameraPosition(TARGET_LOCATION, 11.0f, 0.0f, 0.0f).savePosition(viewModel),
+                CameraPosition(startPosition, 12.0f, 0.0f, 0.0f).savePosition(viewModel), //11f
                 Animation(Animation.Type.SMOOTH, 1.5f),
                 null
             )

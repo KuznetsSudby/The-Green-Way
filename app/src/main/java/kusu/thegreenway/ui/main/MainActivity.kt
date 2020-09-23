@@ -23,7 +23,6 @@ class MainActivity : DaggerAppCompatActivity() {
     lateinit var authRepository: AuthRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        MapKitFactory.initialize(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.a_main)
 

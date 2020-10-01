@@ -40,4 +40,6 @@ dependencies {
 
     implementation project(":common")
     implementation project(":auth")
+
+    lintPublish project(':checks')
 }

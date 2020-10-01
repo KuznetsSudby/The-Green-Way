@@ -38,7 +38,9 @@ buildscript {
     repositories {
         google()
         jcenter()
-        
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:$gradle_version"
@@ -46,15 +48,20 @@ buildscript {
         classpath "com.google.gms:google-services:$google_version"
         classpath "com.google.firebase:firebase-crashlytics-gradle:$firebase_craslytics_gradle_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
+        classpath "io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.0.0-RC14"
     }
 }
 
 allprojects {
+    apply from: "$rootDir/detekt.gradle"
     repositories {
         google()
         jcenter()
         repositories {
             maven { url 'https://jitpack.io' }
+            maven {
+                url "https://plugins.gradle.org/m2/"
+            }
         }
     }
 }

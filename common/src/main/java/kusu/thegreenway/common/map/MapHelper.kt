@@ -5,6 +5,7 @@ import android.animation.ValueAnimator
 import android.content.res.Resources
 import android.graphics.PointF
 import androidx.core.animation.addListener
+import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.*
 import kusu.thegreenway.common.R
 import kusu.thegreenway.common.models.DotType
@@ -16,6 +17,7 @@ const val DOT_SCALE = 1.0f
 const val DOT_SCALE_SELECTED = 1.4f
 const val LINE_WIDTH = 2f
 const val LINE_WIDTH_SELECTED = 4f
+const val USER_POINT_DURATION = 2000L
 
 fun DotType?.convertToIcon(): Int {
     return when (this?.id) {
@@ -50,6 +52,23 @@ fun PolylineMapObject.unselect(resources: Resources, baseColorId: Int) {
                 }
             })
     animatorSet.start()
+}
+
+fun PlacemarkMapObject.moveTo(point: Point) {
+    val start = this.geometry
+    val deltaLat = point.latitude - this.geometry.latitude
+    val deltaLon = point.longitude - this.geometry.longitude
+    ValueAnimator.ofFloat(0f,1f)
+        .setDuration(USER_POINT_DURATION)
+        .apply {
+            addUpdateListener {
+                this@moveTo.geometry =  start.plus(deltaLat * it.animatedValue as Float, deltaLon * it.animatedValue as Float)
+            }
+        }.start()
+}
+
+private fun Point.plus(d: Double, d1: Double): Point {
+    return Point(this.latitude + d, this.longitude + d1)
 }
 
 fun PolylineMapObject.select(resources: Resources, baseColorId: Int) {

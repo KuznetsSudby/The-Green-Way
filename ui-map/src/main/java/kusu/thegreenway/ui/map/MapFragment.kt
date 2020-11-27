@@ -1,11 +1,13 @@
 package kusu.thegreenway.ui.map
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.PointF
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.transition.TransitionManager
 import android.view.View
 import android.view.View.GONE
@@ -18,6 +20,10 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.yandex.mapkit.Animation
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
@@ -53,11 +59,43 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
     var selectedRoute: PolylineMapObject? = null
     var selectedDot: PlacemarkMapObject? = null
 
+    var user : PlacemarkMapObject? = null
+
     val args: MapFragmentArgs by navArgs()
 
     var startPosition = TARGET_LOCATION
 
     lateinit var detailsHolder: DetailsHolder
+
+    val fusedLocationProviderClient by lazy {
+        LocationServices.getFusedLocationProviderClient(requireContext())
+    }
+
+    val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            locationResult ?: return
+            locationResult.lastLocation.let {
+                moveUserIcon(Point(it.latitude, it.longitude))
+            }
+        }
+    }
+
+    private fun moveUserIcon(point: Point) {
+        user?.let{
+            it.moveTo(point)
+        } ?: run {
+            user = mapView.map.mapObjects.addPlacemark(
+                point,
+                fromResource(requireContext(), R.drawable.ic_pin_user)
+            )
+        }
+    }
+
+    val locationRequest = LocationRequest.create().apply {
+        interval = 10_000
+        fastestInterval = 3_000
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -79,9 +117,9 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
         })
 
         viewModel.selectedItem.observe(viewLifecycleOwner, Observer { route ->
-            route?.dots?.find { it.type.id == DotType.ROUTE_START }?.let { dot ->
+            (route?.dots?.find { it.type.id == DotType.ROUTE_START }?.position ?: route?.lines?.getOrNull(0))?.let { dot ->
                 mapView.map.move(
-                    CameraPosition(dot.position.toPoint(), 14.0f, 0.0f, 0.0f).savePosition(viewModel),
+                    CameraPosition(dot.toPoint(), 14.0f, 0.0f, 0.0f).savePosition(viewModel),
                     Animation(Animation.Type.SMOOTH, 1.5f),
                     null
                 )
@@ -96,80 +134,26 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
         viewModel.favoritesModel.message.observe(viewLifecycleOwner, EventObserver {
             it.toast(requireContext())
         })
-        if (ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                0
-            )
-        } else {
-            val mapKit = MapKitFactory.getInstance()
-            val userLocationLayer = mapKit.createUserLocationLayer(mapView.mapWindow)
-            userLocationLayer.isVisible = true
-            userLocationLayer.isHeadingEnabled = false
-            userLocationLayer.setObjectListener(object : UserLocationObjectListener {
+    }
 
-                override fun onObjectUpdated(userLocationView: UserLocationView, p1: ObjectEvent) {
-//                    userLocationLayer.resetAnchor()
-                    val pinIcon = userLocationView.getPin().useCompositeIcon();
-                    pinIcon.setIcon(
-                        "pin", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
-                            .setRotationType(RotationType.ROTATE)
-                            .setZIndex(1f)
-                            .setScale(0.5f)
-                    )
-                    pinIcon.setIcon(
-                        "icon", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
-                            .setRotationType(RotationType.ROTATE)
-                            .setZIndex(0f)
-                            .setScale(1f)
-                    )
-                    userLocationView.accuracyCircle.fillColor = resources.getColor(R.color.map_alpha)
-                }
+    @SuppressLint("MissingPermission")
+    private fun startListenLocation() {
 
-                override fun onObjectRemoved(p0: UserLocationView) {
-                }
+        val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val lastGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        val lastNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
 
-                override fun onObjectAdded(userLocationView: UserLocationView) {
-                    val pinIcon = userLocationView.getPin().useCompositeIcon();
-                    pinIcon.setIcon(
-                        "pin", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
-                            .setRotationType(RotationType.ROTATE)
-                            .setZIndex(1f)
-                            .setScale(0.5f)
-                    )
-                    pinIcon.setIcon(
-                        "icon", fromResource(requireContext(), R.drawable.ic_pin_user), IconStyle().setAnchor(PointF(0f, 0f))
-                            .setRotationType(RotationType.ROTATE)
-                            .setZIndex(0f)
-                            .setScale(1f)
-                    )
-                    userLocationView.accuracyCircle.fillColor = resources.getColor(R.color.map_alpha)
-                }
-            })
-            userLocationLayer.cameraPosition()?.let {
-                startPosition = it.target
-            }
-            userLocationLayer.resetAnchor()
-
-            val locationManager = requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val lastGps = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            val lastNetwork = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-
-            if (lastGps != null) {
-                startPosition = Point(lastGps.latitude, lastGps.longitude)
-            } else if (lastNetwork != null) {
-                startPosition = Point(lastNetwork.latitude, lastNetwork.longitude)
-            }
+        if (lastGps != null) {
+            startPosition = Point(lastGps.latitude, lastGps.longitude)
+        } else if (lastNetwork != null) {
+            startPosition = Point(lastNetwork.latitude, lastNetwork.longitude)
         }
+
+        fusedLocationProviderClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 
     private fun openDetails(selectedObject: Any?) {
@@ -335,10 +319,28 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
     override fun onStop() {
         mapView.onStop()
         super.onStop()
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback)
     }
 
     override fun onStart() {
         super.onStart()
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                requireActivity(),
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+                0
+            )
+        } else {
+            startListenLocation()
+        }
         mapView.onStart()
         moveCamera()
     }

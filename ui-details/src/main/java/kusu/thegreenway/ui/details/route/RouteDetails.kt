@@ -57,6 +57,10 @@ class RouteDetails : DaggerFragment(R.layout.f_route_details) {
             indicator.attachTo(viewPager)
             indicator.reattach()
 
+            viewPager.visibility = if (route.images.isEmpty()) GONE else VISIBLE
+            discreteTopLine.visibility = if (route.images.isEmpty()) GONE else VISIBLE
+            indicator.visibility = if (route.images.isEmpty()) GONE else VISIBLE
+
             chipGroup.removeAllViews()
             route.categories.forEach {
                 val chip = Chip(context)
@@ -82,14 +86,14 @@ class RouteDetails : DaggerFragment(R.layout.f_route_details) {
                 Polyline(route.lines.map { it.toPoint() })
             ).select(resources, viewModel.favoritesModel.toColor(route))
 
-            route.dots.find { it.type.id == DotType.ROUTE_START }?.let { dot ->
+            (route.dots.find { it.type.id == DotType.ROUTE_START }?.position ?: route.lines.getOrNull(0))?.let { dot ->
                 mapView.map.move(
-                    CameraPosition(dot.position.toPoint(), 13.0f, 0.0f, 0.0f),
+                    CameraPosition(dot.toPoint(), 13.0f, 0.0f, 0.0f),
                     Animation(Animation.Type.LINEAR, 0f),
                     null
                 )
                 mapView.map.move(
-                    CameraPosition(dot.position.toPoint(), 15.0f, 0.0f, 0.0f),
+                    CameraPosition(dot.toPoint(), 15.0f, 0.0f, 0.0f),
                     Animation(Animation.Type.SMOOTH, 3f),
                     null
                 )

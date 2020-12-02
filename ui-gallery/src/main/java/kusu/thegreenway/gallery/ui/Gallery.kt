@@ -12,6 +12,7 @@ class Gallery : FragmentActivity() {
         setContentView(R.layout.a_gallery)
         viewPager.adapter = GalleryPager(
             this,
+            viewPager,
             intent.getStringArrayExtra(IMAGES) ?: arrayOf()
         )
         indicator.attachTo(viewPager)

@@ -3,7 +3,7 @@
     android:layout_height="match_parent"
     android:background="@android:color/black">
 
-    <com.ortiz.touchview.TouchImageView
+    <kusu.thegreenway.common.views.CustomTouchImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/imageView"

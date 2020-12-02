@@ -9,6 +9,7 @@ import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.*
 import kusu.thegreenway.common.R
 import kusu.thegreenway.common.models.DotType
+import java.lang.Exception
 import java.lang.RuntimeException
 
 const val ANIMATION_DURATION = 500L
@@ -55,16 +56,24 @@ fun PolylineMapObject.unselect(resources: Resources, baseColorId: Int) {
 }
 
 fun PlacemarkMapObject.moveTo(point: Point) {
-    val start = this.geometry
-    val deltaLat = point.latitude - this.geometry.latitude
-    val deltaLon = point.longitude - this.geometry.longitude
-    ValueAnimator.ofFloat(0f,1f)
-        .setDuration(USER_POINT_DURATION)
-        .apply {
-            addUpdateListener {
-                this@moveTo.geometry =  start.plus(deltaLat * it.animatedValue as Float, deltaLon * it.animatedValue as Float)
-            }
-        }.start()
+    try {
+        val start = this.geometry
+        val deltaLat = point.latitude - this.geometry.latitude
+        val deltaLon = point.longitude - this.geometry.longitude
+        ValueAnimator.ofFloat(0f, 1f)
+            .setDuration(USER_POINT_DURATION)
+            .apply {
+                addUpdateListener {
+                    try {
+                        this@moveTo.geometry = start.plus(deltaLat * it.animatedValue as Float, deltaLon * it.animatedValue as Float)
+                    } catch (e: Exception) {
+
+                    }
+                }
+            }.start()
+    } catch (e: Exception) {
+
+    }
 }
 
 private fun Point.plus(d: Double, d1: Double): Point {

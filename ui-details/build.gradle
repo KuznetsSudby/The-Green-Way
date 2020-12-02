@@ -45,5 +45,6 @@ dependencies {
     implementation project(":favorites")
     implementation project(":common")
     implementation project(":navigation")
+    implementation project(":ui-gallery")
 
 }

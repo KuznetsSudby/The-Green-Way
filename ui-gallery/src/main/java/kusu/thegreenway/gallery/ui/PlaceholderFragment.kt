@@ -6,11 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.viewpager2.widget.ViewPager2
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.i_gallery.*
+import kusu.thegreenway.common.views.ChangeZoomListener
 import kusu.thegreenway.gallery.R
 
 class PlaceholderFragment : Fragment() {
+
+    private lateinit var viewPager2: ViewPager2
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,6 +26,18 @@ class PlaceholderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Picasso.get().load(requireArguments().getString(IMAGE)).into(imageView)
+
+        imageView.changeZoomListener = object : ChangeZoomListener {
+            override fun changedZoom(zoom: Float) {
+                viewPager2.isUserInputEnabled = zoom in 0.98f..1.02f
+                println("ExcM ++++ " + zoom)
+            }
+        }
+    }
+
+    fun setPager(viewPager2: ViewPager2): Fragment {
+        this.viewPager2 = viewPager2
+        return this
     }
 
     companion object {

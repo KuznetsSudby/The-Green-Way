@@ -31,6 +31,7 @@ import kusu.thegreenway.common.models.TravelType
 import kusu.thegreenway.common.EventObserver
 import kusu.thegreenway.common.map.*
 import kusu.thegreenway.common.toast
+import kusu.thegreenway.gallery.ui.Gallery
 import kusu.thegreenway.navigation.NavGraphDirections
 import kusu.thegreenway.ui.details.R
 import javax.inject.Inject
@@ -202,11 +203,11 @@ class RouteDetails : DaggerFragment(R.layout.f_route_details) {
 
     fun openImage(images: List<String>, position: Int) {
         //Todo fix problem "viewPager2" + "TouchImageView"
-//        val intent = Intent(requireContext(), Gallery::class.java)
-//        intent.putExtra(Gallery.POSITION, position)
-//        intent.putExtra(Gallery.IMAGES, images.toTypedArray())
-//        requireActivity().startActivity(intent)
-        findNavController().navigate(NavGraphDirections.actionOpenImage(images[position]))
+        val intent = Intent(requireContext(), Gallery::class.java)
+        intent.putExtra(Gallery.POSITION, position)
+        intent.putExtra(Gallery.IMAGES, images.toTypedArray())
+        requireActivity().startActivity(intent)
+//        findNavController().navigate(NavGraphDirections.actionOpenImage(images[position]))
     }
 
     override fun onStop() {

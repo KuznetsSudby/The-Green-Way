@@ -10,6 +10,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
@@ -72,5 +73,14 @@ fun hideKeyboardFrom(context: Context, view: View) {
 fun hideKeyboardFrom(context: Activity) {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(context.currentFocus?.windowToken, 0)
+}
+
+fun Fragment.getStatusBarHeight(): Int {
+    var result = 0
+    val resourceId = Resources.getSystem().getIdentifier("status_bar_height", "dimen", "android")
+    if (resourceId > 0) {
+        result = Resources.getSystem().getDimensionPixelSize(resourceId)
+    }
+    return result
 }
 

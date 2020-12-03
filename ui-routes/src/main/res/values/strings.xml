@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ui_hint_route_search">Поиск по маршрутам</string>
+    <string name="ui_range_filter">Длинна маршрута:</string>
+    <string name="ui_availability_filter">Фильтр по доступности:</string>
+    <string name="ui_type_hint">Будут отображены все маршруты попадающие хотя бы под один выбранный пункт</string>
+    <string name="ui_availability_hint">Будут отображены все маршруты попадающие сразу под ВСЕ выбранные пункты</string>
 </resources>

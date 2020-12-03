@@ -66,18 +66,11 @@
                 android:id="@+id/detailsButton"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/descriptionShort"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/space.andHalf"
                 android:layout_marginEnd="@dimen/space.andHalf"
                 android:layout_marginBottom="@dimen/space.andHalf"
-                android:background="@drawable/background_button"
-                android:gravity="center"
-                android:padding="@dimen/space.half"
                 android:text="@string/ui_open_details"
-                android:textColor="@color/colorAccent"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                style="@style/BaseButton" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </LinearLayout>

@@ -2,10 +2,13 @@ package kusu.thegreenway.gallery.ui
 
 import android.os.Bundle
 import androidx.fragment.app.FragmentActivity
+import androidx.navigation.navArgs
 import kotlinx.android.synthetic.main.a_gallery.*
 import kusu.thegreenway.gallery.R
 
 class Gallery : FragmentActivity() {
+
+    val args: GalleryArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -13,18 +16,12 @@ class Gallery : FragmentActivity() {
         viewPager.adapter = GalleryPager(
             this,
             viewPager,
-            intent.getStringArrayExtra(IMAGES) ?: arrayOf()
+            args.images
         )
         indicator.attachTo(viewPager)
         indicator.reattach()
         viewPager.post{
-            viewPager.currentItem = intent.getIntExtra(POSITION, 0)
+            viewPager.currentItem = args.position.toInt()
         }
-    }
-
-    companion object {
-
-        const val IMAGES = "images"
-        const val POSITION = "position"
     }
 }

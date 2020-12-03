@@ -16,6 +16,7 @@ import kusu.thegreenway.preferences.PreferencesRepository
 import kusu.thegreenway.common.Event
 import kusu.thegreenway.common.Result
 import kusu.thegreenway.common.map.toLatLng
+import java.lang.reflect.Array
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,6 +49,9 @@ class FirestoreDatabase @Inject constructor(
     override val loading: LiveData<Boolean> = Transformations.map(state) {
         it == State.LOADING
     }
+
+    override val travelTypesList: ArrayList<TravelType> = ArrayList<TravelType>()
+    override val categoriesList: ArrayList<Category> = ArrayList<Category>()
 
     override val dots: LiveData<List<Dot>> = _dots
     override val routes: LiveData<List<Route>> = _routes
@@ -148,6 +152,8 @@ class FirestoreDatabase @Inject constructor(
                 title = converted.title
             )
         }
+        travelTypesList.clear()
+        travelTypesList.addAll(travelTypes.values.sortedBy { it.title })
 
         jobCategories.getCompleted().forEach { document ->
             val converted = document.toObject(FirestoreCategory::class.java)!!
@@ -156,6 +162,8 @@ class FirestoreDatabase @Inject constructor(
                 title = converted.title
             )
         }
+        categoriesList.clear()
+        categoriesList.addAll(categories.values.sortedBy { it.title })
 
         jobDifficulties.getCompleted().forEach { document ->
             val converted = document.toObject(FirestoreDifficulty::class.java)!!

@@ -25,4 +25,19 @@
     <string name="ui_with_wheelchair">Доступно для людей на коляске</string>
     <string name="ui_find_error_send_mail">Заметили ошибку? Напишите нам!</string>
     <string name="ui_email_from_route">Я заметил ошибку в маршруте "%s" [%s]\n\n</string>
+    <string name="ui_hint_route_search">Поиск по маршрутам</string>
+    <string name="ui_all_types">Все типы</string>
+    <string name="ui_type_filter">Фильтр по типу:</string>
+    <string name="ui_category_filter">Фильтер по категории:</string>
+    <string name="ui_all_categories">Все категории</string>
+    <string name="ui_route_filters">Фитры для маршрутов</string>
+    <string name="ui_clear_filters">Сбросить</string>
+    <string name="ui_save">Применить</string>
+    <string name="ui_range_filter">Длинна маршрута:</string>
+    <string name="ui_availability_filter">Фильтр по доступности:</string>
+    <string name="ui_all_routes">Все маршруты</string>
+    <string name="ui_with_child_min">С детьми</string>
+    <string name="ui_with_animal_min">С животными</string>
+    <string name="ui_with_visually_impaired_min">С нарушением зрения</string>
+    <string name="ui_with_wheelchair_min">На коляске</string>
 </resources>

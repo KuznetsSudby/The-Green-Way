@@ -15,6 +15,7 @@
     <color name="line2">#FFFFFF</color>
     <color name="approved">#1A00E305</color>
     <color name="gray">#5E5E5E</color>
+    <color name="grayLight">#B3B3B3</color>
 </resources>
 
 

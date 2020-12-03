@@ -12,9 +12,9 @@ android {
 
     defaultConfig {
         applicationId "kusu.thegreenway"
-        minSdkVersion 21
+        minSdkVersion 24
         targetSdkVersion 29
-        versionCode 10
+        versionCode 11
         versionName "BY Guide"
         versionNameSuffix "-1.0." + versionCode
     }
@@ -45,14 +45,16 @@ android {
         jvmTarget = "1.8"
     }
 
+    flavorDimensions "style"
+
     productFlavors {
         market {
             applicationId "kusu.thegreenway"
-            flavorDimensions "default"
+            flavorDimensions "style"
         }
         my {
             applicationId "kusu.thegreenway.my"
-            flavorDimensions "default"
+            flavorDimensions "style"
         }
     }
 

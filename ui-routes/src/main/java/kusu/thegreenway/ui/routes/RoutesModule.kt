@@ -5,16 +5,23 @@ import dagger.Binds
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.InternalCoroutinesApi
 import kusu.thegreenway.common.dagger.ViewModelBuilder
 import kusu.thegreenway.common.dagger.ViewModelKey
 
 @Module
 abstract class RoutesModule {
 
+    @InternalCoroutinesApi
     @ContributesAndroidInjector(modules = [
         ViewModelBuilder::class
     ])
     internal abstract fun routesFragment(): RoutesFragment
+
+    @ContributesAndroidInjector(modules = [
+        ViewModelBuilder::class
+    ])
+    internal abstract fun filter(): FilterDlg
 
     @Binds
     @IntoMap

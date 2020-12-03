@@ -7,6 +7,7 @@ import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -35,7 +36,7 @@ class RoutesFragment : DaggerFragment(R.layout.f_routes) {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private val viewModel by viewModels<RoutesViewModel> { viewModelFactory }
+    private val viewModel by activityViewModels<RoutesViewModel> { viewModelFactory }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -53,6 +54,7 @@ class RoutesFragment : DaggerFragment(R.layout.f_routes) {
 
         viewModel.screenRoutes.observe(viewLifecycleOwner, Observer {
             list.adapter = DetailsAdapter(it, viewModel.favoritesModel, ::openRoute)
+            updateFilterIcon()
         })
 
         lifecycleScope.launchWhenResumed {
@@ -71,6 +73,19 @@ class RoutesFragment : DaggerFragment(R.layout.f_routes) {
         clear.setOnClickListener {
             viewModel.clearSearch()
         }
+
+        filter.setOnClickListener {
+            findNavController().navigate(RoutesFragmentDirections.actionRoutesFragmentToFilter())
+        }
+    }
+
+    private fun updateFilterIcon() {
+        filter.setImageResource(
+            if (viewModel.isFiltered())
+                R.drawable.ic_filter_fill
+            else
+                R.drawable.ic_filter
+        )
     }
 
     private fun openRoute(route: Route) {

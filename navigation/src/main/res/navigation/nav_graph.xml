@@ -13,6 +13,14 @@
         app:popEnterAnim="@anim/pop_enter"
         app:popExitAnim="@anim/pop_exit" />
 
+    <action
+        android:id="@+id/actionGallery"
+        app:destination="@+id/galleryActivity"
+        app:enterAnim="@anim/enter"
+        app:exitAnim="@anim/exit"
+        app:popEnterAnim="@anim/pop_enter"
+        app:popExitAnim="@anim/pop_exit" />
+
     <fragment
         android:id="@+id/mapFragment"
         android:name="kusu.thegreenway.ui.map.MapFragment">
@@ -66,6 +74,10 @@
             app:exitAnim="@anim/exit"
             app:popEnterAnim="@anim/pop_enter"
             app:popExitAnim="@anim/pop_exit" />
+
+        <action
+            android:id="@+id/action_routesFragment_to_filter"
+            app:destination="@id/filter" />
     </fragment>
 
     <fragment
@@ -99,11 +111,26 @@
             app:popUpToInclusive="true" />
     </fragment>
 
+    <dialog
+        android:id="@+id/filter"
+        android:name="kusu.thegreenway.ui.routes.FilterDlg"/>
+
     <activity
         android:id="@+id/oneImageActivity"
         android:name="kusu.thegreenway.gallery.ui.Image">
         <argument
             android:name="image"
             app:argType="string" />
+    </activity>
+
+    <activity
+        android:id="@+id/galleryActivity"
+        android:name="kusu.thegreenway.gallery.ui.Gallery">
+        <argument
+            android:name="position"
+            app:argType="long" />
+        <argument
+            android:name="images"
+            app:argType="string[]" />
     </activity>
 </navigation>

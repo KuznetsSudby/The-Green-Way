@@ -13,4 +13,48 @@
         <item name="chipSpacingVertical">2dp</item>
     </style>
 
+    <style name="Chip" />
+
+    <style name="Chip.Select" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="chipSpacing">0dp</item>
+        <item name="checkedIcon">@null</item>
+        <item name="chipStrokeWidth">0dp</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="chipBackgroundColor">@color/chip_background</item>
+        <item name="chipCornerRadius">10dp</item>
+        <item name="chipEndPadding">10dp</item>
+        <item name="chipStartPadding">10dp</item>
+    </style>
+
+    <style name="CloseButton">
+        <item name="android:src">@drawable/ic_close</item>
+    </style>
+
+    <style name="CloseButton.Right">
+        <item name="android:layout_width">64dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:padding">18dp</item>
+        <item name="tint">@color/colorAccent</item>
+    </style>
+
+    <style name="BaseButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/background_button</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/space.half</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="BaseButton.Additional">
+        <item name="android:textStyle">normal</item>
+        <item name="android:background">@drawable/background_button_additional</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
 </resources>

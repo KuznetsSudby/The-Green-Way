@@ -202,12 +202,7 @@ class RouteDetails : DaggerFragment(R.layout.f_route_details) {
     }
 
     fun openImage(images: List<String>, position: Int) {
-        //Todo fix problem "viewPager2" + "TouchImageView"
-        val intent = Intent(requireContext(), Gallery::class.java)
-        intent.putExtra(Gallery.POSITION, position)
-        intent.putExtra(Gallery.IMAGES, images.toTypedArray())
-        requireActivity().startActivity(intent)
-//        findNavController().navigate(NavGraphDirections.actionOpenImage(images[position]))
+        findNavController().navigate(NavGraphDirections.actionGallery(position.toLong(), images.toTypedArray()))
     }
 
     override fun onStop() {

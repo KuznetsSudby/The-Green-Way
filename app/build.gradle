@@ -12,9 +12,9 @@ android {
 
     defaultConfig {
         applicationId "kusu.thegreenway"
-        minSdkVersion 24
+        minSdkVersion 21
         targetSdkVersion 29
-        versionCode 11
+        versionCode 12
         versionName "BY Guide"
         versionNameSuffix "-1.0." + versionCode
     }

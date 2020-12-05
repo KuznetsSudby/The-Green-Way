@@ -6,4 +6,21 @@
         <attr name="deviation" format="dimension" />
         <attr name="fillBottom" format="boolean" />
     </declare-styleable>
+
+
+    <declare-styleable name="RangeFloatSeekBarView">
+        <attr format="integer|dimension" name="rf2minValueStep"/>
+        <attr format="integer|dimension" name="rf2maxValueStep"/>
+        <attr format="integer|dimension" name="rf2maxValue"/>
+        <attr format="integer|dimension" name="rf2minValue"/>
+        <attr format="integer|dimension" name="rf2CurrentMaxValue"/>
+        <attr format="integer|dimension" name="rf2CurrentMinValue"/>
+        <attr format="dimension" name="rf2barHeight"/>
+        <attr format="dimension" name="rf2circleRadius"/>
+        <attr format="dimension" name="rf2circleTextSize"/>
+        <attr format="color" name="rf2circleTextColor"/>
+        <attr format="color" name="rf2baseColor"/>
+        <attr format="color" name="rf2fillColor"/>
+        <attr format="color" name="rf2circleFillColor"/>
+    </declare-styleable>
 </resources>

@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "properties": [],
-      "versionCode": 12,
-      "versionName": "BY Guide-1.0.12",
+      "versionCode": 13,
+      "versionName": "BY Guide-1.0.13",
       "enabled": true,
       "outputFile": "app-market-release.apk"
     }

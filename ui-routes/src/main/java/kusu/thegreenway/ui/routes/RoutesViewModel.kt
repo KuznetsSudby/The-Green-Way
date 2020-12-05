@@ -101,7 +101,7 @@ class RoutesViewModel @Inject constructor(
         val DEF_TYPES = HashSet<String>()
         val DEF_CATEGORIES = HashSet<String>()
         val DEF_AVAILABILITY = HashSet<String>()
-        var DEF_RANGE = Pair(1, 100)
+        var DEF_RANGE = Pair(0, 100)
     }
 }
 

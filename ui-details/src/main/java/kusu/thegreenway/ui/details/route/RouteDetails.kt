@@ -103,9 +103,12 @@ class RouteDetails : DaggerFragment(R.layout.f_route_details) {
             route.dots.forEach { dot ->
                 mapView.map.mapObjects.addPlacemark(
                     dot.position.toPoint(),
-                    ImageProvider.fromResource(
-                        requireContext(),
-                        dot.type.convertToIcon()
+                    ImageProvider.fromBitmap(
+                        convertToIcon(
+                            requireContext(),
+                            dot.type.category,
+                            dot.type.id
+                        )
                     ),
                     getBaseIconStyle()
                 )

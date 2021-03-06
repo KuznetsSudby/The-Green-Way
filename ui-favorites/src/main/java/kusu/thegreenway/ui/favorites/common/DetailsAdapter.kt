@@ -1,4 +1,4 @@
-package kusu.thegreenway.ui.favorites.common
+ package kusu.thegreenway.ui.favorites.common
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

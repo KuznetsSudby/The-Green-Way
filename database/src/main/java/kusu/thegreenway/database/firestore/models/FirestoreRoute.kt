@@ -20,4 +20,5 @@ class FirestoreRoute : Serializable {
     val wheelchair: Boolean = false
     val distance: Double = 1.0
     val durations = HashMap<String, Int>()
+    val isVisible: Boolean = true
 }

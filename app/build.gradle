@@ -14,7 +14,7 @@ android {
         applicationId "kusu.thegreenway"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 13
+        versionCode 15
         versionName "BY Guide"
         versionNameSuffix "-1.0." + versionCode
     }

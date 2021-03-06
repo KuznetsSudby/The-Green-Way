@@ -16,7 +16,6 @@ import kusu.thegreenway.preferences.PreferencesRepository
 import kusu.thegreenway.common.Event
 import kusu.thegreenway.common.Result
 import kusu.thegreenway.common.map.toLatLng
-import java.lang.reflect.Array
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -69,8 +68,8 @@ class FirestoreDatabase @Inject constructor(
                 success = { fromCache ->
                     if (!fromCache)
                         preferencesRepository.updateTimeLoadFromCache()
-                    _dots.postValue(dotsMap.values.toList())
-                    _routes.postValue(routesMap.values.toList().sortedBy { it.title })
+                    _dots.postValue(dotsMap.values.filter { it.isVisible }.toList())
+                    _routes.postValue(routesMap.values.filter { it.isVisible }.toList().sortedBy { it.title })
                     synchronized(state) {
                         state.postValue(State.LOADED)
                     }
@@ -141,7 +140,8 @@ class FirestoreDatabase @Inject constructor(
             types[document.id] = DotType(
                 id = document.id,
                 title = converted.title,
-                onlyRoute = converted.onlyRoute
+                onlyRoute = converted.onlyRoute,
+                category = converted.category?.id ?: ""
             )
         }
 
@@ -180,6 +180,8 @@ class FirestoreDatabase @Inject constructor(
                 title = converted.title,
                 description = converted.description,
                 position = converted.position.toLatLng(),
+                isVisible = converted.isVisible,
+                images = converted.images,
                 type = types[converted.type?.id] ?: return@forEach
             )
         }
@@ -199,6 +201,7 @@ class FirestoreDatabase @Inject constructor(
                 animals = converted.animals,
                 approved = converted.approved,
                 children = converted.children,
+                isVisible = converted.isVisible,
                 visuallyImpaired = converted.visuallyImpaired,
                 wheelchair = converted.wheelchair,
                 distance = converted.distance,

@@ -270,9 +270,12 @@ class MapFragment : DaggerFragment(R.layout.f_map), MapObjectTapListener, OnBack
             } else {
                 addDots[dot.id] = mapView.map.mapObjects.addPlacemark(
                     dot.position.toPoint(),
-                    ImageProvider.fromResource(
-                        requireContext(),
-                        dot.type.convertToIcon()
+                    ImageProvider.fromBitmap(
+                        convertToIcon(
+                            requireContext(),
+                            dot.type.category,
+                            dot.type.id
+                        )
                     ),
                     getBaseIconStyle()
                 ).apply {

@@ -9,4 +9,6 @@ class FirestoreDot: Serializable {
     val description: String = ""
     val type: DocumentReference? = null
     val position: GeoPoint = GeoPoint(0.0, 0.0)
+    val images: List<String> = emptyList()
+    val isVisible: Boolean = true
 }

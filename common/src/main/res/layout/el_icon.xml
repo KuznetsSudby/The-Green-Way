@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="32dp"
+    android:layout_height="32dp">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:src="@drawable/ic_pin_base"
+        android:layout_width="32dp"
+        android:layout_height="32dp"/>
+
+    <ImageView
+        android:id="@+id/subIcon"
+        android:layout_marginTop="3dp"
+        android:padding="2dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="16dp"
+        android:layout_height="16dp"/>
+</RelativeLayout>
